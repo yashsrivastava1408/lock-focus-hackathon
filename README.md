@@ -11,31 +11,51 @@ Lock Focus runs entirely **client-side** to ensure privacy and low latency. It l
 
 ```mermaid
 graph TD
+    %% Actors
     User([👤 User]) -->|Interacts| UI[💻 Frontend Interface]
-    
-    subgraph "Core Application (React + Vite)"
-        UI -->|Routing| Router[React Router]
-        Router --> Dashboard[📊 ADHD Dashboard]
-        Router --> Games[🎮 Gamified Therapy]
-        Router --> Tools[🛠️ Accessibility Tools]
+
+    %% Frontend Layer
+    subgraph "Frontend Layer (React)"
+        UI --> Router{React Router}
+        Router -->|Route| P1[📊 ADHD Dashboard]
+        Router -->|Route| P2[🎮 Dyslexia Workspace]
+        Router -->|Route| P3[🕹️ Focus Flow Game]
+        Router -->|Route| P4[⚡ Focus Scan Test]
     end
 
-    subgraph "AI & Processing Layer (Browser-Native)"
-        Direction[Logic]
+    %% Logic & Engine Layer
+    subgraph "Engine & AI Layer (Browser-Native)"
+        %% Neuro-Pilot Engine
+        P3 -->|Triggers| NP_Engine[🚀 Neuro-Pilot Engine]
         TF[🧠 TensorFlow.js] -->|Loads| Blaze[🔥 Blazeface Model]
-        Tess[📖 Tesseract.js] -->|OCR| TextProcess[Text Abstraction]
+        Blaze -->|Face Detection| NP_Engine
+        NP_Engine -->|Steering Signal| P3
+
+        %% Focus Scan Engine
+        P4 -->|Triggers| Reflex[⏱️ Reflex Analysis Engine]
+        Reflex -->|Captures| Milliseconds[ms Response Time]
+
+        %% Dyslexia Engine
+        P2 -->|Triggers| Syllable[⚔️ Syllable Slasher Engine]
+        Syllable -->|Input| WordData[Word Corpus]
+        WordData -->|Chunking| Syllable
         
-        Blaze -->|Real-time Gaze| Attn[Attention State Detection]
-        Attn -->|Control Signal| NeuroPilot[🚀 Neuro-Pilot Engine]
+        %% Immersive Reader
+        P2 -->|Triggers| Reader[📖 Immersive Reader]
+        Tess[👁️ Tesseract.js] -->|OCR| Reader
     end
 
-    subgraph "Privacy-First Storage"
+    %% Data Layer
+    subgraph "Persistence Layer"
         Store[(🗄️ Local Storage)]
+        P1 -->|Reads| Store
+        Reflex -->|Writes Score| Store
+        P3 -->|Writes High Score| Store
     end
 
-    NeuroPilot -->|Auto-Steer| Games
-    Dashboard -->|Read/Write| Store
-    Tools -->|Read| Tess
+    %% Flow Connections
+    Milliseconds -->|Calculates| Score[Cognitive Score]
+    Score --> Store
 ```
 
 ---
