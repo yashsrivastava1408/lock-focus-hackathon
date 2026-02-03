@@ -1,76 +1,132 @@
-# Lock Focus
+# Lock Focus 🧠✨
+> **An Intent-Aware, Adaptive Cognitive Ecosystem**
 
-Lock Focus is an immersive web application designed to help users assess, track, and improve their cognitive focus. Built with modern web technologies, it combines productivity tools with a visually engaging interface to create a unique user experience.
+**Lock Focus** is a privacy-first web platform designed to assess, track, and improve cognitive focus through adaptive AI and gamified neuro-feedback. It bridges the gap between static content and neurodiverse needs (ADHD/Dyslexia) using real-time attention signals.
 
-## � Problem Statement
+---
 
-- **Static Content Design**: Most interfaces use fixed layouts. They assume linear reading. This causes cognitive overload.
-- **Poor Neurodiversity Support**: Dense text blocks hurt readability. ADHD and dyslexic users struggle. No adaptive reading flow.
-- **No Real-Time User Awareness**: Systems don’t track attention signals. No detection of skimming or confusion. Feedback comes too late or never.
-- **Accessibility Needs Manual Setup**: Tools depend on diagnosis or settings. Many users never enable them. Support doesn’t reach scale.
+## 🏗️ Architecture & Data Flow
 
-## 💡 Proposed Solution
+Lock Focus runs entirely **client-side** to ensure privacy and low latency. It leverages persistent browser storage and local AI models.
 
-**An Intent-Aware, Adaptive Reading Ecosystem**
+```mermaid
+graph TD
+    User([👤 User]) -->|Interacts| UI[💻 Frontend Interface]
+    
+    subgraph "Core Application (React + Vite)"
+        UI -->|Routing| Router[React Router]
+        Router --> Dashboard[📊 ADHD Dashboard]
+        Router --> Games[🎮 Gamified Therapy]
+        Router --> Tools[🛠️ Accessibility Tools]
+    end
 
-- **Dynamic Personalisation**: Platform that reshapes content in real time based on how a user interacts with the screen.
-- **Behavioural Intelligence**: Actively adjusts layout, text emphasis, and pacing using engagement signals.
-- **Frictionless Accessibility**: Privacy first by design. Inclusive features activate automatically, without diagnosis or manual setup.
-- **Outcome-Driven Design**: Reduces visual noise and cognitive load. Improves comprehension and retention in long form digital content consuming.
+    subgraph "AI & Processing Layer (Browser-Native)"
+        Direction[Logic]
+        TF[🧠 TensorFlow.js] -->|Loads| Blaze[🔥 Blazeface Model]
+        Tess[📖 Tesseract.js] -->|OCR| TextProcess[Text Abstraction]
+        
+        Blaze -->|Real-time Gaze| Attn[Attention State Detection]
+        Attn -->|Control Signal| NeuroPilot[🚀 Neuro-Pilot Engine]
+    end
 
-## 🌟 Impacts and Benefits
+    subgraph "Privacy-First Storage"
+        Store[(🗄️ Local Storage)]
+    end
 
-- **For Learners**: Less eye strain and mental fatigue, higher confidence and task completion. Finish long form work without burnout.
-- **For Educators**: Clear data on where learners struggle and Identify difficult sections instantly. Design better, clearer content.
-- **For Institutions**: Supports Universal Design for Learning (UDL). Improves engagement and retention rates.
-- **For Society**: Normalises adaptive reading tools while removing stigma around learning support.
+    NeuroPilot -->|Auto-Steer| Games
+    Dashboard -->|Read/Write| Store
+    Tools -->|Read| Tess
+```
 
-## �🚀 Features
+---
 
-- **Interactive Dashboard**: A central hub to track your progress and navigate through the application.
-- **Focus Scan**: A specialized testing module to assess your current focus levels.
-- **Detailed Analytics**: View comprehensive test results to understand your cognitive performance.
-- **Immersive Reader**: A distraction-free environment for reading and study.
-- **Secure Authentication**: User accounts with Login and Sign-Up functionality.
-- **Modern UI/UX**: 
-  - Smooth animations powered by **Framer Motion**.
-  - Interactive 3D elements using **React Three Fiber**.
-  - Responsive and accessible design with **Tailwind CSS**.
+## 🚀 Key Features (Hackathon Prototype)
+
+### 1. Neuro-Pilot Mode (Focus Flow) 🕹️
+A "self-driving" game mode powered by your attention.
+-   **How it works**: Uses `Blazeface` (TensorFlow.js) to detect if you are looking at the screen.
+-   **The Pilot**: If you are **Focused**, the ship auto-dodges obstacles and collects points. If you **Look Away**, the ship stops, leading to a crash.
+-   **Goal**: Gamifies the act of "sustaining attention" (Neurofeedback).
+
+### 2. Focus Scan ⚡
+A reaction-time and visual precision analyzer.
+-   **Metrics**: Measures Reaction Time (ms) and Click Accuracy.
+-   **Analysis**: Generates a "Cognitive Efficiency" score based on performance.
+
+### 3. Syllable Slasher (Dyslexia Support) ⚔️
+A reading assistant game.
+-   **Mechanism**: Breaks down complex words into readable syllables (e.g., "Un-be-liev-a-ble").
+-   **Impact**: Reduces phonological processing load for dyslexic users.
+
+---
+
+## 🧪 Step-by-Step Judge's Walkthrough
+
+Follow this guide to test the **functional prototype**:
+
+### Step 1: Initialize the App
+1.  Open the deployed link or `http://localhost:5173`.
+2.  On the Landing Page, scroll down to the **"Vision Simulator"**.
+3.  **Try it**: Click **"Dyslexia"** or **"ADHD"** to visually experience the problem statement.
+
+### Step 2: Enter the Dashboard
+1.  Click **"Open Prototype"** or **"Dashboard"** in the navigation.
+2.  You will land on the **ADHD Dashboard**. Note the real-time "Optimal Focus" metrics.
+
+### Step 3: Test "Neuro-Pilot" (The AI Hero Feature) 🌟
+*This requires a webcam. No video is recorded; processing is 100% local.*
+1.  Click the **"Training Center"** card or go to **Games -> Focus Flow**.
+2.  **Disclaimer**: A privacy modal will appear. Click **"Enable Camera & Continue"**.
+3.  **Allow Permission**: Browser will ask for camera access. Allow it.
+4.  **Verify HUD**: Look at the top-left corner. You should see "Attention Signal: FOCUSED" (Green).
+5.  **Activate**: Click the purple **"NEURO-PILOT"** button.
+6.  **The Test**:
+    -   **Look at the screen**: The ship drives itself safely.
+    -   **Turn your head away**: The ship stops steering.
+    -   *This proves the app is reacting to your physical attention in real-time.*
+
+### Step 4: Test "Focus Scan"
+1.  Return to Dashboard -> Click **"Focus Scan"** (Top Right Card).
+2.  Click **"Start Analysis"**.
+3.  Click the grid cells as they light up green.
+4.  View your **Results** at the end (Score/Reaction Time).
+
+---
+
+## 💡 Problem & Solution
+
+### The Problem
+-   **Static Interfaces**: Traditional UIs ignore user state. They don't know if you are bored, confused, or skimming.
+-   **Neurodiversity Gap**: ADHD/Dyslexic users struggle with dense text and lack of feedback.
+
+### The Solution: "Lock Focus"
+-   **Adaptive**: Interfaces that react to *you*.
+-   **Privacy-First**: Real-time AI that runs on *your device*, not the cloud.
+-   **Gamified**: Turning cognitive therapy into engaging experiences.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **3D Graphics**: [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/) & [Drei](https://github.com/pmndrs/drei)
-- **Routing**: [React Router](https://reactrouter.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
+-   **Frontend**: React (Vite), Tailwind CSS, Framer Motion
+-   **AI/ML**: TensorFlow.js, Blazeface (Face Detection), Tesseract.js (OCR)
+-   **Visualization**: Recharts (Analytics), Lucide React (Icons)
+-   **Deployment**: Vercel / Netlify
 
-## 📦 Getting Started
+---
 
-Follow these steps to set up the project locally:
+## 🔒 Privacy & Ethics Statement
 
-1. **Clone the repository** (if applicable) or navigate to the project directory.
+**Camera Usage**: The "Neuro-Pilot" feature uses the webcam solely for real-time face presence detection.
+-   ✅ **Local Processing**: All video data is processed in the browser memory.
+-   ✅ **No Storage**: No video or images are ever saved, stored, or transmitted to any server.
+-   ✅ **Opt-In**: The feature is disabled by default and requires explicit user consent.
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+---
 
-3. **Start the development server**:
-   ```bash
-   npm run dev
-   ```
+## 📦 Setup Instructions (Local)
 
-4. **Open your browser**:
-   Navigate to `http://localhost:5173` (or the URL shown in your terminal) to view the application.
-
-## 🏗️ Build for Production
-
-To create a production-ready build:
-
-```bash
-npm run build
-```
-
-This will generate the static files in the `dist` directory.
+1.  **Clone**: `git clone https://github.com/imarnv/lock-focus.git`
+2.  **Install**: `npm install`
+3.  **Run**: `npm run dev`
+4.  **Visit**: `http://localhost:5173`

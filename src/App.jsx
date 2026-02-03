@@ -9,6 +9,8 @@ import FocusScan from './pages/FocusScan';
 import Reader from './pages/Reader';
 import DyslexiaGame from './pages/DyslexiaGame';
 import DyslexiaDashboard from './pages/DyslexiaDashboard';
+import ADHDDashboard from './pages/ADHDDashboard';
+import FocusFlow from './pages/FocusFlow';
 import SyllableSlasher from './pages/SyllableSlasher';
 
 import { ThemeProvider } from './components/ThemeContext';
@@ -56,6 +58,8 @@ function App() {
           <Route path="/reader" element={<Reader />} />
           <Route path="/dyslexia-game" element={<DyslexiaGame />} />
           <Route path="/dyslexia-dashboard" element={<DyslexiaDashboard />} />
+          <Route path="/adhd-dashboard" element={<ADHDDashboard />} />
+          <Route path="/focus-flow" element={<FocusFlow />} />
           <Route path="/syllable-slasher" element={<SyllableSlasher />} />
         </Routes>
       </Router>

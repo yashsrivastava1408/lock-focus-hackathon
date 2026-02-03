@@ -188,13 +188,16 @@ const Dashboard = () => {
 
                         {/* 4 Creative Buttons */}
                         <div className="grid grid-cols-2 gap-3 mb-6">
-                            <ModeButton
-                                label="ADHD"
-                                icon={Zap}
-                                active={accessibilityMode === 'adhd'}
-                                onClick={() => toggleMode('adhd')}
-                                colorClass="bg-orange-500"
-                            />
+                            <Link to="/adhd-dashboard">
+                                <ModeButton
+                                    label="ADHD"
+                                    icon={Zap}
+                                    active={accessibilityMode === 'adhd'}
+                                    // onClick={() => toggleMode('adhd')}
+                                    onClick={() => { }}
+                                    colorClass="bg-orange-500"
+                                />
+                            </Link>
                             <Link to="/dyslexia-dashboard">
                                 <ModeButton
                                     label="Dyslexia"

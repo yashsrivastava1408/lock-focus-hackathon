@@ -10,6 +10,7 @@ import {
     Eye,
     BarChart3,
     Gamepad2,
+    Shield,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProjectNavbar from "../components/ProjectNavbar";
@@ -118,9 +119,9 @@ const ProjectPage = () => {
                         <div className="grid md:grid-cols-4 gap-6 text-left">
                             {[
                                 "1. Open Dashboard",
-                                "2. Go to 'Dyslexia Workspace'",
-                                "3. Play 'Syllable Slasher'",
-                                "4. Observe Adaptive UI"
+                                "2. Click 'Focus Flow'",
+                                "3. Enable 'Neuro-Pilot'",
+                                "4. Test Attention Control"
                             ].map((step, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/50">
                                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-bold text-sm shrink-0">
@@ -148,24 +149,24 @@ const ProjectPage = () => {
                 <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
                     {[
                         {
-                            icon: Gamepad2,
-                            title: "Dyslexia Training Game",
-                            desc: "Syllable Slasher trains decoding and chunking.",
+                            icon: Brain,
+                            title: "Neuro-Pilot (AI)",
+                            desc: "Camera-based attention game. Moves only when you focus.",
                         },
                         {
-                            icon: Eye,
-                            title: "Immersive Reader",
-                            desc: "Distraction-free adaptive reading environment.",
+                            icon: Gamepad2,
+                            title: "Dyslexia Gamification",
+                            desc: "Syllable Slasher trains decoding and chunking.",
                         },
                         {
                             icon: Activity,
                             title: "Focus Scan",
-                            desc: "Assess focus using interaction signals.",
+                            desc: "Assess reaction time and precision with millisecond accuracy.",
                         },
                         {
-                            icon: BarChart3,
-                            title: "Analytics Dashboard",
-                            desc: "Track progress, sessions, and improvement.",
+                            icon: Shield,
+                            title: "Privacy-First AI",
+                            desc: "100% Local Processing. No video data leaves your device.",
                         },
                     ].map((f, i) => (
                         <div
