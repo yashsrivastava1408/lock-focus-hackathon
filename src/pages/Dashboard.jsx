@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Play, Activity, Brain, Layers, ArrowRight, Zap, Eye, ChevronDown, Check, Book, RefreshCw, Sparkles, ArrowUpRight } from 'lucide-react';
+import { Play, Activity, Brain, Layers, ArrowRight, Zap, Target, Eye, ChevronDown, Check, Book, RefreshCw, Sparkles, ArrowUpRight } from 'lucide-react';
 import { useTheme } from '../components/ThemeContext';
 import ProgressCharts from '../components/ProgressCharts';
 import AuroraAnimation from '../components/AuroraAnimation';
@@ -220,13 +220,15 @@ const Dashboard = () => {
                                 onClick={() => toggleMode('vision-stress')}
                                 colorClass="bg-pink-500"
                             />
-                            <ModeButton
-                                label="Royal"
-                                icon={Brain}
-                                active={accessibilityMode === 'royal-blue'}
-                                onClick={() => toggleMode('royal-blue')}
-                                colorClass="bg-blue-600"
-                            />
+                            <Link to="/peripheral-vision">
+                                <ModeButton
+                                    label="PeriQuest"
+                                    icon={Target}
+                                    active={false}
+                                    onClick={() => { }}
+                                    colorClass="bg-red-500"
+                                />
+                            </Link>
                         </div>
 
                         {/* Color Blind Dropdown */}

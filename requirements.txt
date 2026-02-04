@@ -1,0 +1,24 @@
+# PeriQuest - Enhanced Peripheral Vision Therapy Game
+# Python package requirements
+
+# Core dependencies
+pygame>=2.5.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+pandas>=2.0.0
+
+# Eye tracking
+mediapipe>=0.10.0
+
+# Report generation
+matplotlib>=3.7.0
+seaborn>=0.12.0
+reportlab>=4.0.0
+# OR alternatively:
+# fpdf2>=2.7.0
+
+# Optional for HTML reports
+jinja2>=3.1.0
+
+# Data handling
+python-dateutil>=2.8.0
