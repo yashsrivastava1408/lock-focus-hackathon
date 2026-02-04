@@ -1,75 +1,141 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const LockEyesAnimation = () => {
+const LockConstellationAnimation = () => {
+    // 1. Static Body Nodes (The Base)
+    const bodyNodes = [
+        { x: 50, y: 80 }, { x: 100, y: 80 }, { x: 150, y: 80 }, // Top
+        { x: 150, y: 120 }, { x: 150, y: 160 }, // Right
+        { x: 100, y: 160 }, { x: 50, y: 160 }, { x: 50, y: 120 } // Bottom & Left
+    ];
+
+    // 2. Keyhole Nodes (Center)
+    const keyholeNodes = [
+        { x: 100, y: 110 }, // Top
+        { x: 110, y: 120 }, { x: 105, y: 135 }, // Right side
+        { x: 95, y: 135 }, { x: 90, y: 120 } // Left side & Bottom
+    ];
+
+    // 3. Shackle Nodes (Dynamic: Open -> Closed)
+    // We define the "Closed" positions. 
+    // For "Open", we'll shift the left side UP and rotate slightly in the animation prop.
+    const shackleNodesBase = [
+        { x: 50, y: 80 }, { x: 50, y: 50 }, { x: 50, y: 30 }, // Left Up
+        { x: 70, y: 15 }, { x: 100, y: 15 }, { x: 130, y: 15 }, // Arch Top
+        { x: 150, y: 30 }, { x: 150, y: 50 }, { x: 150, y: 80 } // Right Down
+    ];
+
+    // Helper to generate Star Entry variants
+    const starEntry = (i) => ({
+        hidden: {
+            x: Math.random() * 800 - 400,
+            y: Math.random() * 800 - 400,
+            opacity: 0,
+            scale: 0
+        },
+        visible: {
+            x: 0,
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            transition: {
+                duration: 1.5,
+                delay: i * 0.05,
+                type: "spring",
+                stiffness: 40
+            }
+        }
+    });
+
+    const shackleVariants = {
+        open: { y: -30, x: 20, rotate: 15, opacity: 1 },
+        closed: {
+            y: 0, x: 0, rotate: 0, opacity: 1,
+            transition: { duration: 0.8, ease: "backOut", delay: 2.5 } // Lock after stars form
+        }
+    };
+
     return (
         <div className="relative w-72 h-72 flex items-center justify-center">
+            <svg width="200" height="200" viewBox="0 0 200 200" className="overflow-visible">
 
-            {/* Lock Shape - Thicker Stroke */}
-            <svg
-                width="100%" height="100%" viewBox="0 0 200 200" fill="none"
-                className="absolute inset-0 z-0 opacity-10"
-            >
-                {/* Lock Body */}
+                {/* A. Thick Greyish Cover (Body) - Fades in */}
                 <motion.rect
-                    x="50" y="80" width="100" height="80" rx="10"
-                    stroke="white" strokeWidth="8" // Thicker stroke
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                    x="40" y="70" width="120" height="100" rx="15"
+                    fill="white"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.1 }}
+                    transition={{ duration: 1, delay: 1 }}
                 />
-                {/* Lock Shackle */}
+
+                {/* B. Thick Shackle Arch (Synced with Shackle Nodes) */}
                 <motion.path
-                    d="M70 80 V50 A30 30 0 0 1 130 50 V80"
-                    stroke="white" strokeWidth="8" // Thicker stroke
+                    d="M50 80 V50 C50 20 150 20 150 50 V80"
                     fill="none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+                    stroke="white" strokeWidth="16" strokeOpacity="0.1"
+                    strokeLinecap="round"
+                    initial="open"
+                    animate="closed"
+                    variants={shackleVariants}
                 />
+
+                {/* C. Body Nodes & Lines */}
+                <motion.g initial="hidden" animate="visible">
+                    {/* Lines */}
+                    <motion.path
+                        d="M50 80 H150 V160 H50 V80 Z"
+                        stroke="white" strokeWidth="1" strokeOpacity="0.3" fill="none"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1.5, delay: 1 }}
+                    />
+
+                    {/* Keyhole Lines */}
+                    <motion.path
+                        d="M100 110 L110 120 L105 135 H95 L90 120 Z"
+                        stroke="white" strokeWidth="1" strokeOpacity="0.5" fill="none"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1, delay: 1.5 }}
+                    />
+
+                    {/* Nodes */}
+                    {[...bodyNodes, ...keyholeNodes].map((node, i) => (
+                        <motion.circle
+                            key={`b-node-${i}`}
+                            cx={node.x} cy={node.y} r={1.5}
+                            fill="white"
+                            variants={starEntry(i)}
+                        />
+                    ))}
+                </motion.g>
+
+                {/* D. Shackle Nodes & Lines (Animated Group) */}
+                <motion.g
+                    initial="open"
+                    animate="closed"
+                    variants={shackleVariants}
+                >
+                    {/* Shackle Line */}
+                    <motion.path
+                        d="M50 80 V50 C50 20 75 15 100 15 C125 15 150 20 150 50 V80"
+                        stroke="white" strokeWidth="1" strokeOpacity="0.5" fill="none"
+                    />
+
+                    {shackleNodesBase.map((node, i) => (
+                        <motion.circle
+                            key={`s-node-${i}`}
+                            cx={node.x} cy={node.y} r={2}
+                            fill="white"
+                            className="shadow-[0_0_10px_white]"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.5 + (i * 0.05) }}
+                        />
+                    ))}
+                </motion.g>
+
             </svg>
-
-            {/* Eyes & Specs Container */}
-            <div className="absolute inset-0 flex items-center justify-center gap-12 z-10 transition-all duration-1000">
-
-                {/* Left Eye Complex */}
-                <div className="relative">
-                    {/* Spectacle Frame (Circle) */}
-                    <div className="w-24 h-24 rounded-full border-4 border-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
-
-                    {/* The Eye */}
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center relative shadow-sm border border-gray-100 z-20">
-                        <motion.div
-                            className="w-full h-full bg-white absolute top-0 left-0 z-30 origin-top rounded-full"
-                            initial={{ scaleY: 0 }}
-                            animate={{ scaleY: [0, 1, 0, 1, 0] }} // Blink logic
-                            transition={{ duration: 4, times: [0, 0.05, 0.1, 0.15, 0.2], repeat: Infinity, repeatDelay: 3 }}
-                        ></motion.div>
-                        <div className="w-6 h-6 bg-black rounded-full z-20"></div>
-                    </div>
-                </div>
-
-                {/* Right Eye Complex */}
-                <div className="relative">
-                    {/* Spectacle Frame */}
-                    <div className="w-24 h-24 rounded-full border-4 border-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
-
-                    {/* The Eye */}
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center relative shadow-sm border border-gray-100 z-20">
-                        <motion.div
-                            className="w-full h-full bg-white absolute top-0 left-0 z-30 origin-top rounded-full"
-                            initial={{ scaleY: 0 }}
-                            animate={{ scaleY: [0, 1, 0, 1, 0] }} // Blink
-                            transition={{ duration: 4, times: [0, 0.05, 0.1, 0.15, 0.2], repeat: Infinity, repeatDelay: 3 }}
-                        ></motion.div>
-                        <div className="w-6 h-6 bg-black rounded-full z-20"></div>
-                    </div>
-                </div>
-
-                {/* Spectacle Bridge */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-2 bg-white z-10 mt-[-4px]"></div>
-            </div>
-
         </div>
     );
 };
@@ -116,7 +182,7 @@ const Intro = ({ onComplete }) => {
                     transition={{ duration: 1.5, ease: "easeInOut" }}
                 >
                     <div className="scale-125">
-                        <LockEyesAnimation />
+                        <LockConstellationAnimation />
                     </div>
 
                     <h1 className="text-4xl font-light tracking-widest font-sans h-12 flex items-center gap-2 text-white mt-8">
