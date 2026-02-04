@@ -13,7 +13,7 @@ const LockEyesAnimation = () => {
                 {/* Lock Body */}
                 <motion.rect
                     x="50" y="80" width="100" height="80" rx="10"
-                    stroke="black" strokeWidth="8" // Thicker stroke
+                    stroke="white" strokeWidth="8" // Thicker stroke
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     transition={{ duration: 1.5, ease: "easeInOut" }}
@@ -21,7 +21,7 @@ const LockEyesAnimation = () => {
                 {/* Lock Shackle */}
                 <motion.path
                     d="M70 80 V50 A30 30 0 0 1 130 50 V80"
-                    stroke="black" strokeWidth="8" // Thicker stroke
+                    stroke="white" strokeWidth="8" // Thicker stroke
                     fill="none"
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
@@ -35,7 +35,7 @@ const LockEyesAnimation = () => {
                 {/* Left Eye Complex */}
                 <div className="relative">
                     {/* Spectacle Frame (Circle) */}
-                    <div className="w-24 h-24 rounded-full border-4 border-black absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
+                    <div className="w-24 h-24 rounded-full border-4 border-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
 
                     {/* The Eye */}
                     <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center relative shadow-sm border border-gray-100 z-20">
@@ -52,7 +52,7 @@ const LockEyesAnimation = () => {
                 {/* Right Eye Complex */}
                 <div className="relative">
                     {/* Spectacle Frame */}
-                    <div className="w-24 h-24 rounded-full border-4 border-black absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
+                    <div className="w-24 h-24 rounded-full border-4 border-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 box-border"></div>
 
                     {/* The Eye */}
                     <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center relative shadow-sm border border-gray-100 z-20">
@@ -67,7 +67,7 @@ const LockEyesAnimation = () => {
                 </div>
 
                 {/* Spectacle Bridge */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-2 bg-black z-10 mt-[-4px]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-2 bg-white z-10 mt-[-4px]"></div>
             </div>
 
         </div>
@@ -111,7 +111,7 @@ const Intro = ({ onComplete }) => {
             {!isFadingOut ? (
                 <motion.div
                     key="intro-container"
-                    className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center gap-8"
+                    className="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center gap-8"
                     exit={{ opacity: 0 }} // Corrected: AnimatePresence handles component removal
                     transition={{ duration: 1.5, ease: "easeInOut" }}
                 >
@@ -119,7 +119,7 @@ const Intro = ({ onComplete }) => {
                         <LockEyesAnimation />
                     </div>
 
-                    <h1 className="text-4xl font-light tracking-widest font-sans h-12 flex items-center gap-2 text-black mt-8">
+                    <h1 className="text-4xl font-light tracking-widest font-sans h-12 flex items-center gap-2 text-white mt-8">
                         <span>{text.replace("FOCUS", "")}</span>
                         {text.includes("FOCUS") && (
                             <motion.span

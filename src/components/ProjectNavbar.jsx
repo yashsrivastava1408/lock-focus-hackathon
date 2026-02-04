@@ -47,24 +47,7 @@ const ProjectNavbar = () => {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-6">
-                    {/* Theme Toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2 rounded-full hover:bg-foreground/5 text-foreground transition-colors relative overflow-hidden group"
-                        aria-label="Toggle Theme"
-                    >
-                        <AnimatePresence mode="wait" initial={false}>
-                            <motion.div
-                                key={theme}
-                                initial={{ y: -20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: 20, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
-                            </motion.div>
-                        </AnimatePresence>
-                    </button>
+                    {/* Theme Toggle Removed */}
 
                     {/* Auth Buttons */}
 

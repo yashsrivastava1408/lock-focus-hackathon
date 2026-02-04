@@ -62,31 +62,6 @@ const Navbar = () => {
                     />
                 </div>
 
-                {/* Notifications */}
-                <button className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
-                    <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
-                </button>
-
-                {/* Theme Toggle */}
-                <button
-                    onClick={toggleTheme}
-                    className="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center justify-center text-gray-600 dark:text-gray-300 transition-colors"
-                    aria-label="Toggle Theme"
-                >
-                    <AnimatePresence mode="wait" initial={false}>
-                        <motion.div
-                            key={theme}
-                            initial={{ y: -20, opacity: 0, rotate: -90 }}
-                            animate={{ y: 0, opacity: 1, rotate: 0 }}
-                            exit={{ y: 20, opacity: 0, rotate: 90 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                        </motion.div>
-                    </AnimatePresence>
-                </button>
-
                 {/* Profile User */}
                 <div className="relative">
                     <button
