@@ -1,30 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ThreeDEye from '../components/ThreeDEye';
-import { ArrowLeft, Check, ArrowRight, Play, Eye } from 'lucide-react';
-import NerveAnimation from '../components/NerveAnimation';
+import { ArrowLeft, Check, ArrowRight, Play, Eye, Activity, Zap, Layers } from 'lucide-react';
+import OpticNerveAnimation from '../components/OpticNerveAnimation';
 import { useNavigate } from 'react-router-dom';
 
 const TestStep = ({ title, description, children, onNext, isLast }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+            className="w-full max-w-3xl mx-auto z-10 relative"
         >
-            <h2 className="text-3xl font-light mb-2">{title}</h2>
-            <p className="text-gray-500 mb-8">{description}</p>
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm mb-8 min-h-[300px]">
+            <div className="text-center mb-8">
+                <h2 className="text-4xl font-light text-white mb-2 tracking-tight">{title}</h2>
+                <p className="text-slate-400 text-lg">{description}</p>
+            </div>
+
+            <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl mb-8 min-h-[350px] relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                 {children}
             </div>
-            <div className="flex justify-end">
+
+            <div className="flex justify-center">
                 <button
                     onClick={onNext}
-                    className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition-colors"
+                    className="group relative flex items-center gap-3 bg-white text-slate-950 px-10 py-4 rounded-full font-bold hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all duration-300"
                 >
-                    {isLast ? 'Complete Scan' : 'Next Step'}
-                    {isLast ? <Check className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+                    <span className="relative z-10">{isLast ? 'Complete Scan' : 'Next Step'}</span>
+                    {isLast ? <Check className="w-5 h-5 relative z-10" /> : <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />}
                 </button>
             </div>
         </motion.div>
@@ -32,42 +36,40 @@ const TestStep = ({ title, description, children, onNext, isLast }) => {
 };
 
 const ReactionTimeTest = ({ onComplete }) => {
-    const [state, setState] = useState('waiting'); // waiting, ready, now, clicked, done, penalty
+    const [state, setState] = useState('waiting');
     const [startTime, setStartTime] = useState(0);
     const [times, setTimes] = useState([]);
     const [penalties, setPenalties] = useState(0);
     const [round, setRound] = useState(1);
-    const [isTarget, setIsTarget] = useState(true); // true = GREEN (Go), false = RED (No-Go)
+    const [isTarget, setIsTarget] = useState(true);
 
-    // Config
-    const TOTAL_ROUNDS = 8; // Increased rounds for reliability
+    const TOTAL_ROUNDS = 5;
+
+    // Auto-start first round
+    useEffect(() => {
+        if (round === 1 && state === 'waiting' && times.length === 0) {
+            // Wait for user to be ready? No, let's manual start for control
+        }
+    }, [round, state, times.length]);
 
     const startRound = useCallback(() => {
         setState('ready');
-        // Random delay 1.5s - 4s
         const delay = 1500 + Math.random() * 2500;
-
         setTimeout(() => {
-            // Randomly decide if this is a "Go" (Green) or "No-Go" (Red) trial
-            // 70% chance of "Go" (Green), 30% chance of "No-Go" (Red)
             const isGoTrial = Math.random() > 0.3;
             setIsTarget(isGoTrial);
             setState('now');
             setStartTime(Date.now());
 
-            // If it's a "No-Go" (Red), we need to auto-pass the round if they DON'T click after 2s
             if (!isGoTrial) {
-                setTimeout(() => {
-                    handleNoGoSuccess();
-                }, 1500); // 1.5s window to NOT click
+                setTimeout(() => handleNoGoSuccess(), 2000);
             }
         }, delay);
     }, []);
 
     const handleNoGoSuccess = () => {
-        // User successfully inhibited (didn't click red)
         setState(current => {
-            if (current === 'now') { // Only if they haven't clicked yet
+            if (current === 'now') {
                 nextRound();
                 return 'waiting';
             }
@@ -86,85 +88,68 @@ const ReactionTimeTest = ({ onComplete }) => {
 
     const finishTest = () => {
         setState('done');
-        // Filter out any missed or weird times
         const validTimes = times.length > 0 ? times : [500];
         const avg = Math.round(validTimes.reduce((a, b) => a + b, 0) / validTimes.length);
-
-        // Penalty calculation: Add 100ms for each false start/wrong click
-        const finalScore = avg + (penalties * 100);
-        onComplete(finalScore);
+        onComplete(avg + (penalties * 100));
     };
 
     const handleClick = () => {
         if (state === 'now') {
             if (isTarget) {
-                // Correct "Go" click
                 const time = Date.now() - startTime;
                 setTimes([...times, time]);
                 nextRound();
             } else {
-                // "No-Go" Fail (Clicked Red)
                 setPenalties(p => p + 1);
-                setState('penalty'); // Show "X" or feedback
+                setState('penalty');
                 setTimeout(() => nextRound(), 500);
             }
         } else if (state === 'ready') {
-            // False Start (Clicked too early)
             setPenalties(p => p + 1);
-            alert("Too early! Wait for the signal.");
-            setState('waiting');
+            setState('waiting'); // Reset to manual start
+            alert("Too early! Penalties apply.");
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-80 gap-6">
-            <div className="flex justify-between w-full max-w-md px-4 text-sm font-bold text-gray-400 uppercase tracking-widest">
+        <div className="flex flex-col items-center justify-center h-full min-h-[300px] gap-6">
+            <div className="flex justify-between w-full px-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
                 <span>Round {round} / {TOTAL_ROUNDS}</span>
                 <span className="text-red-400">Errors: {penalties}</span>
             </div>
 
             {state === 'waiting' && (
-                <button onClick={startRound} className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-xl hover:scale-105 transition-transform shadow-lg shadow-blue-500/30">
-                    {round === 1 ? 'Start Inhibition Test' : 'Next Round'}
+                <button onClick={startRound} className="relative z-10 cursor-pointer w-64 h-64 rounded-full bg-slate-800 border-2 border-slate-700 flex flex-col items-center justify-center gap-2 hover:scale-105 transition-all group shadow-2xl shadow-blue-900/20">
+                    <Zap className="w-10 h-10 text-blue-400 group-hover:text-yellow-400 transition-colors" />
+                    <span className="text-xl font-bold text-slate-200">{round === 1 ? 'Start Test' : 'Next Round'}</span>
+                    <span className="text-xs text-slate-500">Tap to begin</span>
                 </button>
             )}
 
             {state === 'ready' && (
-                <div
-                    onClick={handleClick}
-                    className="w-full h-full max-h-48 bg-gray-200 rounded-2xl flex items-center justify-center cursor-pointer text-gray-500 font-bold text-2xl animate-pulse shadow-inner border-4 border-dashed border-gray-300"
-                >
-                    Wait for proper signal...
+                <div onMouseDown={handleClick} className="w-64 h-64 rounded-full bg-slate-800 border-4 border-dashed border-slate-600 flex items-center justify-center animate-pulse cursor-pointer">
+                    <span className="text-2xl font-bold text-slate-400">Wait...</span>
                 </div>
             )}
 
             {(state === 'now' || state === 'penalty') && (
                 <div
-                    onClick={handleClick}
-                    className={`w-full h-full max-h-48 rounded-2xl flex flex-col items-center justify-center cursor-pointer text-white font-bold text-4xl shadow-xl transform transition-all duration-100 ${state === 'penalty' ? 'bg-red-800 scale-95' :
-                            isTarget ? 'bg-green-500 scale-105' : 'bg-red-500' // Green = Go, Red = Don't Go
+                    onMouseDown={handleClick}
+                    className={`relative z-10 w-64 h-64 rounded-full flex flex-col items-center justify-center text-white font-bold text-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-pointer transform transition-all duration-100 ${state === 'penalty' ? 'bg-red-600 scale-90' : isTarget ? 'bg-green-500 scale-110' : 'bg-red-500'
                         }`}
                 >
-                    {state === 'penalty' ? (
-                        <>
-                            <span>❌</span>
-                            <span className="text-lg mt-2">Don't click RED!</span>
-                        </>
-                    ) : isTarget ? 'CLICK!' : 'AWAIT...'}
+                    {state === 'penalty' ? 'MISS!' : isTarget ? 'CLICK!' : 'WAIT!'}
                 </div>
             )}
 
             {state === 'done' && (
-                <div className="text-center animate-bounce-in">
-                    <p className="text-lg text-gray-500 mb-2">Cognitive Response Time</p>
-                    <p className="text-5xl font-black text-primary">{Math.round(times.reduce((a, b) => a + b, 0) / (times.length || 1))}ms</p>
-                    <p className="text-sm text-red-500 mt-2 font-bold">Inhibition Errors: {penalties}</p>
+                <div className="text-center">
+                    <div className="text-6xl font-black text-white mb-2 font-mono tracking-tighter">
+                        {Math.round(times.reduce((a, b) => a + b, 0) / (times.length || 1))}<span className="text-2xl text-slate-500 ml-1">ms</span>
+                    </div>
+                    <p className="text-slate-400">Reaction Average</p>
                 </div>
             )}
-
-            <p className="text-xs text-center max-w-xs text-gray-400 mt-4">
-                <strong>Instructions:</strong> Click <span className="text-green-600 font-bold">GREEN</span> boxes fast. Do <u>NOT</u> click <span className="text-red-500 font-bold">RED</span> boxes.
-            </p>
         </div>
     );
 };
@@ -173,13 +158,16 @@ const ASRSQuestion = ({ question, options = ["Never", "Rarely", "Sometimes", "Of
     const [selected, setSelected] = useState(null);
     return (
         <div className="space-y-4">
-            <h3 className="font-medium text-lg">{question}</h3>
-            <div className="grid grid-cols-5 gap-2">
+            <h3 className="font-medium text-xl text-slate-200">{question}</h3>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {options.map((opt, i) => (
                     <button
                         key={i}
                         onClick={() => setSelected(i)}
-                        className={`py-4 rounded-xl text-base font-medium transition-all ${selected === i ? 'bg-primary text-white shadow-lg scale-105' : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:scale-105'}`}
+                        className={`relative z-10 cursor-pointer py-3 px-2 rounded-xl text-sm font-medium transition-all duration-300 border ${selected === i
+                            ? 'bg-blue-600 border-blue-500 text-white shadow-lg scale-105'
+                            : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:border-slate-600'
+                            }`}
                     >
                         {opt}
                     </button>
@@ -190,28 +178,21 @@ const ASRSQuestion = ({ question, options = ["Never", "Rarely", "Sometimes", "Of
 };
 
 const ContrastTest = ({ onComplete }) => {
-    const [level, setLevel] = useState(1); // 1 to 5, 5 is hardest
+    const [level, setLevel] = useState(1);
     const [targetNumber, setTargetNumber] = useState(8);
 
-    // Opacity levels: 0.1 (hardest) to 0.5 (easiest) - relative to background difference
-    // Actually let's use text colors that get closer to bg #f3f4f6 (gray-100)
-    // Gray-100 is approx #f3f4f6.
-    // Level 1: #374151 (Gray 700) - Easy
-    // Level 2: #9ca3af (Gray 400)
-    // Level 3: #d1d5db (Gray 300)
-    // Level 4: #e5e7eb (Gray 200) - Hard
-    // Level 5: #f3f4f6 (Gray 100) - Invisible almost (using #f0f0f0 for distinct but hard)
+    // Dark Mode Contrast Levels (Text color getting closer to bg #111827)
+    // Bg is slate-900 (#0f172a)
+    // Level 1 (Easy): White (#ffffff)
+    // Level 2 (Medium): #94a3b8 (Slate 400)
+    // Level 3 (Hard): #475569 (Slate 600)
+    // Level 4 (Harder): #334155 (Slate 700)
+    // Level 5 (Impossible): #1e293b (Slate 800)
 
-    const colors = [
-        '#374151',
-        '#9ca3af',
-        '#d1d5db',
-        '#e5e7eb',
-        '#eff0f2', // Very close to #f3f4f6
-    ];
+    const colors = ['#ffffff', '#94a3b8', '#475569', '#334155', '#1e293b'];
 
     const generateRound = useCallback(() => {
-        const num = Math.floor(Math.random() * 9) + 1; // 1-9
+        const num = Math.floor(Math.random() * 9) + 1;
         setTargetNumber(num);
     }, []);
 
@@ -221,46 +202,41 @@ const ContrastTest = ({ onComplete }) => {
                 setLevel(l => l + 1);
                 generateRound();
             } else {
-                // Completed all levels
                 onComplete('Superior');
             }
         } else {
-            // Failed at this level, performance is previous level
-            const result = level === 1 ? 'Low' : level === 2 ? 'Below Average' : level === 3 ? 'Average' : level === 4 ? 'High' : 'Superior';
+            const result = level === 1 ? 'Low' : level === 2 ? 'Below Average' : level === 3 ? 'Average' : 'High';
             onComplete(result);
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-64 gap-6">
-            <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">
-                Level {level} / 5
-            </div>
-
-            <div className="w-full h-64 bg-gray-100 rounded-2xl flex items-center justify-center relative overflow-hidden">
+        <div className="flex flex-col items-center justify-center h-full gap-8">
+            <div className="relative w-full h-40 bg-slate-900 rounded-2xl flex items-center justify-center overflow-hidden border border-slate-800 shadow-inner">
+                {/* Noisy texture overlay could make it harder/more realistic but let's stick to pure color diff */}
                 <span
-                    className="text-6xl md:text-9xl font-bold select-none transition-colors duration-500"
+                    className="text-8xl font-bold select-none transition-colors duration-500"
                     style={{ color: colors[level - 1] }}
                 >
                     {targetNumber}
                 </span>
             </div>
 
-            <div className="grid grid-cols-5 gap-2 w-full max-w-md">
+            <div className="grid grid-cols-5 gap-2 w-full max-w-lg">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                     <button
                         key={num}
                         onClick={() => handleGuess(num)}
-                        className="py-2 rounded-lg border border-gray-200 hover:bg-white hover:shadow-md transition-all font-bold text-gray-600"
+                        className="relative z-10 cursor-pointer aspect-square rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 font-bold text-xl transition-all"
                     >
                         {num}
                     </button>
                 ))}
                 <button
-                    onClick={() => handleGuess(-1)} // Force fail/skip
-                    className="col-span-5 text-xs text-gray-400 hover:text-gray-600 mt-2"
+                    onClick={() => handleGuess(-1)}
+                    className="col-span-5 py-2 text-xs text-slate-500 hover:text-slate-300 uppercase tracking-widest mt-2"
                 >
-                    I can't see it
+                    I can't see anything
                 </button>
             </div>
         </div>
@@ -278,18 +254,12 @@ const FocusScan = () => {
     const textWordCount = 60;
 
     // Preferences
-    const [measures, setMeasures] = useState({
-        reaction: 0,
-        crowding: 'standard',
-        contrast: 'Pending'
-    });
+    const [measures, setMeasures] = useState({ reaction: 0, crowding: 'standard', contrast: 'Pending' });
 
     useEffect(() => {
         let interval;
         if (isTimerRunning) {
-            interval = setInterval(() => {
-                setElapsedTime(prev => prev + 1);
-            }, 1000);
+            interval = setInterval(() => setElapsedTime(p => p + 1), 1000);
         }
         return () => clearInterval(interval);
     }, [isTimerRunning]);
@@ -308,12 +278,10 @@ const FocusScan = () => {
         if (step < 5) {
             setStep(step + 1);
         } else {
-            // Calculate detailed score
-            const reactionScore = Math.max(0, 100 - (measures.reaction / 10)); // simple mock formula
+            const reactionScore = Math.max(0, 100 - (measures.reaction / 10));
             const wpmScore = Math.min(100, (wpm / 300) * 100);
-            const totalScore = Math.round((reactionScore + wpmScore) / 2) || 85; // Fallback if 0
+            const totalScore = Math.round((reactionScore + wpmScore) / 2) || 85;
 
-            // Navigate to Results Page instead of Dashboard
             navigate('/test-results', {
                 state: {
                     wpm: wpm || 250,
@@ -328,135 +296,131 @@ const FocusScan = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-blue-500/30">
 
-            {/* Header / Visualization Area */}
-            <div className={`relative h-[40vh] w-full bg-white flex items-center justify-center overflow-hidden transition-all duration-700 ${step > 0 ? 'h-[25vh]' : ''}`}>
-
-                {/* Visualizations Layer (Nerves) */}
-                <div className="absolute inset-0 w-full h-full z-0">
-                    <NerveAnimation />
+            {/* Immersive Header */}
+            <div className={`relative w-full overflow-hidden transition-all duration-1000 ease-in-out pointer-events-none ${step > 0 ? 'h-[30vh]' : 'h-[50vh]'}`}>
+                <div className="absolute inset-0 z-0">
+                    <OpticNerveAnimation />
                 </div>
 
-                {/* Back Button */}
-                <button onClick={() => navigate('/dashboard')} className="absolute top-8 left-8 p-2 rounded-full hover:bg-gray-100 z-30 transition-colors">
-                    <ArrowLeft className="w-6 h-6 text-gray-500" />
-                </button>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950 z-10"></div>
 
-                {/* Content Container - Flex row for Side-by-Side */}
-                <div className="relative z-10 w-full max-w-6xl px-8 flex items-center justify-between h-full pointer-events-none">
+                <div className="absolute top-0 left-0 w-full p-8 flex justify-between items-start z-20">
+                    <button onClick={() => navigate('/dashboard')} className="pointer-events-auto p-3 rounded-full bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-colors text-white cursor-pointer relative z-50">
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                </div>
 
-                    {/* Left: Text / Instructions */}
-                    <div className="max-w-xl pointer-events-auto">
-                        <motion.h1
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-5xl font-light tracking-tight text-gray-900 mb-4"
-                        >
-                            <span className="font-bold text-blue-600">Focus</span> Calibration
-                        </motion.h1>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-gray-500 text-lg"
-                        >
-                            Initializing neural interface...
-                        </motion.p>
-                    </div>
-
-                    {/* Right: 3D Eye */}
-                    <div className="w-1/3 h-full flex items-center justify-center relative pointer-events-auto">
-                        <div className="w-64 h-64 relative">
-                            <ThreeDEye />
-                        </div>
-                    </div>
+                <div className="absolute bottom-0 left-0 w-full p-12 z-20 flex flex-col items-center justify-end pb-12 pointer-events-none">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-center"
+                    >
+                        <h1 className="text-5xl md:text-7xl font-light text-white mb-4 tracking-tighter">
+                            Focus <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">Scan</span>
+                        </h1>
+                        <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                            Calibrating neural interface for optimal cognitive performance.
+                        </p>
+                    </motion.div>
                 </div>
             </div>
 
-            {/* Test Content Area */}
-            <div className="flex-1 p-8 overflow-y-auto">
+            {/* Content Area */}
+            <div className="relative z-50 -mt-10 px-4 pb-20 pointer-events-auto">
                 <AnimatePresence mode="wait">
+
                     {/* Step 0: ASRS */}
                     {step === 0 && (
-                        <TestStep key="step0" title="Attention Screening" description="Answer honestly based on your last 30 days." onNext={nextStep}>
-                            <div className="space-y-8">
-                                <ASRSQuestion question="How often do you have trouble wrapping up the final details of a project?" />
-                                <ASRSQuestion question="How often do you have difficulty getting things in order?" />
+                        <TestStep key="0" title="Attention Baseline" description="Do you often find yourself..." onNext={nextStep}>
+                            <div className="flex flex-col gap-12">
+                                <ASRSQuestion question="Having trouble waiting your turn in situations when turn-taking is required?" />
+                                <ASRSQuestion question="Feeling distracted by activity or noise around you?" />
                             </div>
                         </TestStep>
                     )}
 
                     {/* Step 1: Reading Speed */}
                     {step === 1 && (
-                        <TestStep key="step1" title="Reading Speed Check" description="Read the text. Click 'Finish' when done." onNext={nextStep}>
-                            <div className="prose prose-lg max-w-none text-gray-700 leading-loose">
-                                <p>Neurodiversity refers to the variation in the human brain regarding sociability, learning, attention, mood and other mental functions. It was coined in 1998 by sociologist Judy Singer, who helped popularize the concept along with journalist Harvey Blume.</p>
-                                <p>The concept was originally thought of as a way to clear up assumptions about ADHD, Autism, and Dyslexia, however it has since expanded to include other conditions.</p>
+                        <TestStep key="1" title="Processing Speed" description="Read the text below normally. Stop the timer when finished." onNext={nextStep}>
+                            <div className="max-w-2xl mx-auto bg-slate-950/50 p-8 rounded-2xl border border-slate-800 leading-relaxed text-slate-300 text-lg font-serif">
+                                <p className="mb-4">
+                                    The concept of neuroplasticity suggests that the brain is not a static organ, but rather a dynamic web of connections that can be rewired through experience and focused attention.
+                                </p>
+                                <p>
+                                    By engaging in specific cognitive exercises, individuals can strengthen neural pathways associated with focus, memory, and emotional regulation, effectively upgrading their own mental hardware over time.
+                                </p>
                             </div>
-                            <div className="flex flex-col items-center gap-4 mt-8">
+
+                            <div className="flex flex-col items-center mt-8">
                                 {!wpm ? (
-                                    <button onClick={toggleTimer} className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all ${isTimerRunning ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse' : 'bg-primary text-white hover:bg-blue-700'}`}>
-                                        <Play className={`w-4 h-4 ${isTimerRunning ? 'hidden' : 'block'}`} />
-                                        {isTimerRunning ? `Reading... ${elapsedTime}s (Click to Stop)` : 'Start Reading Timer'}
+                                    <button onClick={toggleTimer} className={`relative z-20 cursor-pointer flex items-center gap-3 px-10 py-5 rounded-full font-bold text-lg transition-all shadow-xl ${isTimerRunning ? 'bg-red-500/10 text-red-500 border border-red-500/50 animate-pulse' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-blue-900/40'}`}>
+                                        {isTimerRunning ? (
+                                            <>Stop Timer <span className="font-mono ml-2">({elapsedTime}s)</span></>
+                                        ) : (
+                                            <><Play className="w-5 h-5 fill-current" /> Start Reading</>
+                                        )}
                                     </button>
                                 ) : (
                                     <div className="text-center animate-fade-in-up">
-                                        <p className="text-sm text-gray-500 uppercase tracking-widest font-bold mb-1">Your Speed</p>
-                                        <div className="text-5xl font-black text-primary mb-2">{wpm} <span className="text-lg text-gray-400 font-medium">WPM</span></div>
-                                        <p className="text-gray-400 text-sm">Recorded.</p>
+                                        <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Measured Speed</div>
+                                        <div className="text-6xl font-black text-white mb-2">{wpm} <span className="text-2xl text-slate-600">WPM</span></div>
                                     </div>
                                 )}
                             </div>
                         </TestStep>
                     )}
 
-                    {/* Step 2: Reaction Time */}
+                    {/* Step 2: Reaction */}
                     {step === 2 && (
-                        <TestStep key="step2" title="Reaction Time & Reflexes" description="Click as fast as you can when the box turns GREEN." onNext={nextStep}>
-                            <ReactionTimeTest onComplete={(time) => {
-                                console.log('Reaction:', time);
-                                setMeasures(prev => ({ ...prev, reaction: time }));
-                            }} />
+                        <TestStep key="2" title="Inhibition Control" description="Tap GREEN only. Ignore RED." onNext={nextStep}>
+                            <ReactionTimeTest onComplete={(score) => setMeasures(p => ({ ...p, reaction: score }))} />
                         </TestStep>
                     )}
 
                     {/* Step 3: Crowding */}
                     {step === 3 && (
-                        <TestStep key="step3" title="Visual Crowding" description="Select which paragraph is easier to read." onNext={nextStep}>
-                            <div className="grid grid-cols-2 gap-8">
+                        <TestStep key="3" title="Visual Comfort" description="Which text block feels easier to read?" onNext={nextStep}>
+                            <div className="grid md:grid-cols-2 gap-6 h-full items-stretch">
                                 <button
                                     onClick={() => setMeasures(prev => ({ ...prev, crowding: 'tight' }))}
-                                    className={`p-6 border-2 rounded-xl text-left transition-all focus:ring-2 focus:ring-primary/20 active:scale-95 ${measures.crowding === 'tight' ? 'border-primary bg-blue-50' : 'border-gray-100 bg-gray-50 hover:border-primary'}`}
+                                    className={`relative z-10 cursor-pointer p-8 border rounded-3xl text-left transition-all group ${measures.crowding === 'tight' ? 'border-blue-500 bg-blue-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-600'}`}
                                 >
-                                    <h4 className="font-bold mb-2">Option A (Standard)</h4>
-                                    <p className="text-sm leading-tight text-justify">Tight spacing might be standard, but can increase visual crowding. Swift brown fox jumps over the lazy dog.</p>
+                                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-4 text-slate-400 font-bold group-hover:bg-slate-700">A</div>
+                                    <h4 className="font-bold text-white mb-2">Standard Spacing</h4>
+                                    <p className="text-slate-400 text-sm leading-snug">
+                                        The quick brown fox jumps over the lazy dog. Visual crowding can occur when items are too close together, making it hard to identify individual letters.
+                                    </p>
                                 </button>
                                 <button
                                     onClick={() => setMeasures(prev => ({ ...prev, crowding: 'spaced' }))}
-                                    className={`p-6 border-2 rounded-xl text-left transition-all focus:ring-2 focus:ring-primary/20 active:scale-95 ${measures.crowding === 'spaced' ? 'border-primary bg-blue-50' : 'border-gray-100 bg-gray-50 hover:border-primary'}`}
+                                    className={`relative z-10 cursor-pointer p-8 border rounded-3xl text-left transition-all group ${measures.crowding === 'spaced' ? 'border-blue-500 bg-blue-500/10' : 'border-slate-800 bg-slate-900 hover:border-slate-600'}`}
                                 >
-                                    <h4 className="font-bold mb-2">Option B (Spaced)</h4>
-                                    <p className="text-sm leading-loose tracking-wide text-left">Expanded spacing often reduces visual stress. It gives the eyes more room to rest.</p>
+                                    <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-4 text-slate-400 font-bold group-hover:bg-slate-700">B</div>
+                                    <h4 className="font-bold text-white mb-2">Expanded Spacing</h4>
+                                    <p className="text-slate-400 text-sm leading-loose tracking-wide">
+                                        The quick brown fox jumps over the lazy dog. Extra space can reduce the crowding effect and improve reading comfort for many people.
+                                    </p>
                                 </button>
                             </div>
                         </TestStep>
                     )}
 
-                    {/* Step 4: Contrast Sensitivity */}
+                    {/* Step 4: Contrast */}
                     {step === 4 && (
-                        <TestStep key="step4" title="Contrast Sensitivity" description="Select the number hidden in the box. It will get harder." onNext={nextStep}>
+                        <TestStep key="4" title="Contrast Sensitivity" description="Identify the numbers as they fade into the darkness." onNext={nextStep}>
                             {measures.contrast === 'Pending' ? (
-                                <ContrastTest onComplete={(result) => {
-                                    setMeasures(prev => ({ ...prev, contrast: result }));
-                                }} />
+                                <ContrastTest onComplete={(res) => setMeasures(p => ({ ...p, contrast: res }))} />
                             ) : (
-                                <div className="text-center py-12">
-                                    <div className="inline-block p-4 rounded-full bg-blue-50 text-blue-600 mb-4">
-                                        <Eye className="w-8 h-8" />
+                                <div className="text-center py-20">
+                                    <div className="w-24 h-24 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-6 text-blue-400 animate-pulse">
+                                        <Eye className="w-12 h-12" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-900">Analysis Complete</h3>
-                                    <p className="text-gray-500 mt-2">Visual Threshold: <span className="font-bold text-primary">{measures.contrast}</span></p>
+                                    <h3 className="text-3xl font-bold text-white mb-2">Scan Complete</h3>
+                                    <p className="text-slate-400">Your eyes are <span className="text-blue-400 font-bold">{measures.contrast}</span> Sensitivity.</p>
                                 </div>
                             )}
                         </TestStep>
@@ -464,16 +428,23 @@ const FocusScan = () => {
 
                     {/* Step 5: Complete */}
                     {step === 5 && (
-                        <TestStep key="step5" title="Processing Complete" description="Analysis done." onNext={nextStep} isLast>
-                            <div className="flex flex-col items-center justify-center h-full text-center">
-                                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-                                    <Check className="w-10 h-10" />
+                        <TestStep key="5" title="Calibration Finalized" description="Your cognitive profile is ready." onNext={nextStep} isLast>
+                            <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-green-500 blur-3xl opacity-20 rounded-full"></div>
+                                    <div className="w-24 h-24 bg-gradient-to-tr from-green-500 to-emerald-400 rounded-full flex items-center justify-center mb-8 relative z-10 shadow-xl">
+                                        <Check className="w-12 h-12 text-white" />
+                                    </div>
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2">Profile Calibrated</h3>
-                                <p className="text-gray-500 max-w-sm">We've adjusted the Adaptive Reader settings to match your visual preferences and reading speed.</p>
+
+                                <h3 className="text-3xl font-bold text-white mb-4">You're All Set</h3>
+                                <p className="text-slate-400 max-w-sm mx-auto leading-relaxed">
+                                    We have personalized the Reader and Dashboard based on your focus metrics.
+                                </p>
                             </div>
                         </TestStep>
                     )}
+
                 </AnimatePresence>
             </div>
         </div>

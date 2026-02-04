@@ -14,6 +14,7 @@ import FocusFlow from './pages/FocusFlow';
 import SyllableSlasher from './pages/SyllableSlasher';
 import PeripheralVisionGame from './pages/PeripheralVisionGame';
 import PeriQuestGame from './pages/PeriQuestGame';
+import AdaptivePdfReader from './pages/AdaptivePdfReader';
 
 import { ThemeProvider } from './components/ThemeContext';
 import ProjectPage from './pages/ProjectPage';
@@ -58,6 +59,7 @@ function App() {
           <Route path="/focus-scan" element={<FocusScan />} />
           <Route path="/test-results" element={<TestResults />} />
           <Route path="/reader" element={<Reader />} />
+          <Route path="/adaptive-reader" element={<AdaptivePdfReader />} />
           <Route path="/dyslexia-game" element={<DyslexiaGame />} />
           <Route path="/dyslexia-dashboard" element={<DyslexiaDashboard />} />
           <Route path="/adhd-dashboard" element={<ADHDDashboard />} />

@@ -51,7 +51,7 @@ export const ThemeProvider = ({ children }) => {
 
     return (
         <ThemeContext.Provider value={{
-            theme, toggleTheme,
+            theme, toggleTheme, setTheme,
             accessibilityMode, setAccessibilityMode,
             colorBlindMode, setColorBlindMode
         }}>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Play, Activity, Brain, Layers, ArrowRight, Zap, Target, Eye, ChevronDown, Check, Book, RefreshCw, Sparkles, ArrowUpRight } from 'lucide-react';
+import { Play, Activity, Brain, Layers, ArrowRight, Zap, Target, Eye, ChevronDown, Check, Book, RefreshCw, Sparkles, ArrowUpRight, FileText } from 'lucide-react';
 import { useTheme } from '../components/ThemeContext';
 import ProgressCharts from '../components/ProgressCharts';
 import AuroraAnimation from '../components/AuroraAnimation';
@@ -283,8 +283,43 @@ const Dashboard = () => {
                     </Card>
                 </div>
 
+                {/* C. ADAPTIVE READER CTA */}
+                <div className="md:col-span-6">
+                    <Link to="/adaptive-reader" className="block h-full">
+                        <Card delay={0.35} className="h-full bg-gradient-to-br from-teal-50 to-white dark:from-slate-900 dark:to-slate-950 border-teal-100 dark:border-teal-900 overflow-hidden relative group">
+                            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                            <div className="flex flex-col h-full justify-between relative z-10">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg text-teal-600 dark:text-teal-400">
+                                                <FileText size={20} />
+                                            </div>
+                                            <span className="text-xs font-bold px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full">NEW</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">Adaptive PDF Reader</h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xs">
+                                            Transform documents into Dyslexia, ADHD, and Vision Friendly formats.
+                                        </p>
+                                    </div>
+                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <ArrowRight className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <div className="h-2 flex-1 rounded-full bg-yellow-100 dark:bg-yellow-900/20" title="Dyslexia Friendly"></div>
+                                    <div className="h-2 flex-1 rounded-full bg-blue-100 dark:bg-blue-900/20" title="ADHD Focus"></div>
+                                    <div className="h-2 flex-1 rounded-full bg-green-100 dark:bg-green-900/20" title="Vision Stress"></div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+                </div>
+
                 {/* D. LATEST ANALYSIS SUMMARY */}
-                <div className="md:col-span-12">
+                <div className="md:col-span-6">
                     <Link to="/test-results" className="block">
                         <Card delay={0.4} className="min-h-[180px] hover:ring-2 hover:ring-blue-50 dark:hover:ring-blue-900/30 transition-all cursor-pointer group dark:bg-slate-900">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
