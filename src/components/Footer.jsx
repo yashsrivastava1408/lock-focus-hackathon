@@ -58,7 +58,7 @@ const Footer = () => {
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-end border-t border-gray-100 dark:border-slate-800 mt-auto pt-8 text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium">
                     <div>
-                        Based in <strong className="text-gray-800 dark:text-gray-200">San Francisco, CA</strong><br />
+                        Based in <strong className="text-gray-800 dark:text-gray-200">Chennai, India</strong><br />
                         Operating Worldwide
                     </div>
                     <div className="text-right mt-4 md:mt-0">
