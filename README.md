@@ -78,6 +78,13 @@ A reading assistant game.
 -   **Mechanism**: Breaks down complex words into readable syllables (e.g., "Un-be-liev-a-ble").
 -   **Impact**: Reduces phonological processing load for dyslexic users.
 
+### 4. PeriQuest (Peripheral Vision Therapy) 👁️
+A clinically-inspired game for visual field expansion.
+-   **Mechanism**: Tracks your eye movements using **MediaPipe Iris Tracking** (Face Landmarker).
+-   **The Challenge**: Focus on a center dot while reacting to shapes appearing in your peripheral vision.
+-   **AI Guard**: If you look away from the center (cheat), the center dot turns red and fixation breaks are recorded.
+-   **Impact**: Trains eccentric viewing and peripheral awareness.
+
 ---
 
 ## 🧪 Step-by-Step Judge's Walkthrough
@@ -111,6 +118,17 @@ Follow this guide to test the **functional prototype**:
 3.  Click the grid cells as they light up green.
 4.  View your **Results** at the end (Score/Reaction Time).
 
+### Step 5: Test "PeriQuest" (New: Iris Tracking) 👁️
+1.  Go to **Games -> Peripheral Vision** (or click the Eye icon card).
+2.  **Instructions**: Read the quick guide on the start screen.
+3.  **Enable Tracking**: Click the **"Enable Eye Tracking"** button. Allow camera access.
+4.  **Verification**: You will see a **Red Gaze Cursor** on the screen. Move your eyes to verify it tracks your gaze.
+5.  **Play**:
+    -   Press **SPACE** to start.
+    -   Keep looking at the **Center Dot** (It glows Cyan).
+    -   Press **SPACE** whenever a shape appears in your side vision.
+    -   Try to "cheat" by looking at the shape - the center dot will turn **Red**, detecting your fixation break!
+
 ---
 
 ## 💡 Problem & Solution
@@ -129,7 +147,7 @@ Follow this guide to test the **functional prototype**:
 ## 🛠️ Tech Stack
 
 -   **Frontend**: React (Vite), Tailwind CSS, Framer Motion
--   **AI/ML**: TensorFlow.js, Blazeface (Face Detection), Tesseract.js (OCR)
+-   **AI/ML**: TensorFlow.js (Blazeface), Google MediaPipe (Face Landmarker & Iris Tracking), Tesseract.js (OCR)
 -   **Visualization**: Recharts (Analytics), Lucide React (Icons)
 -   **Deployment**: Vercel / Netlify
 
