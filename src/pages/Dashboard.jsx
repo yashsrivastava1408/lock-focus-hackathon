@@ -83,8 +83,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                             className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 text-sm font-bold tracking-wide"
                         >
-                            <Sparkles size={14} className="text-blue-500" />
-                            <span>NEURAL INTERFACE ACTIVE v2.5</span>
+                            <span>YOUR FOCUS COMPANION</span>
                         </motion.div>
 
                         <div className="space-y-2">
@@ -98,7 +97,7 @@ const Dashboard = () => {
                                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                                 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-500 dark:from-blue-400 dark:to-purple-400"
                             >
-                                Judges.
+                                Explorer.
                             </motion.h1>
                         </div>
 
@@ -140,7 +139,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                            You're in the top 5% of users today.
+                            Great job staying focused!
                         </div>
                     </motion.div>
 

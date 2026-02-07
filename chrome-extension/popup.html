@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock Focus Companion</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="brand">
+                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                </svg>
+                <h1>Lock Focus</h1>
+            </div>
+            <p class="subtitle">Accessibility Companion</p>
+        </header>
+
+        <main>
+            <div class="grid-container">
+                <!-- Dyslexia Font -->
+                <div class="feature-card">
+                    <div class="card-header">
+                        <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="4 7 4 4 20 4 20 7"></polyline>
+                            <line x1="9" y1="20" x2="15" y2="20"></line>
+                            <line x1="12" y1="4" x2="12" y2="20"></line>
+                        </svg>
+                        <span>Dyslexia Font</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dyslexia-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- Bionic Reading -->
+                <div class="feature-card">
+                    <div class="card-header">
+                        <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                        <span>Bionic Read</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="bionic-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- Syllable Splitter -->
+                <div class="feature-card">
+                    <div class="card-header">
+                        <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        <span>Syllables</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="syllable-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <!-- Focus Mode -->
+                <div class="feature-card">
+                    <div class="card-header">
+                        <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Focus Mode</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="focus-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Full Width Rows -->
+            <div class="row-card">
+                <div class="row-content">
+                    <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12h20"></path>
+                        <path d="M2 12l5-5"></path>
+                        <path d="M22 12l-5 5"></path>
+                    </svg>
+                    <span>Reading Ruler</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="reading-ruler-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="row-card">
+                <div class="row-content">
+                    <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                    <span>Voice Speed</span>
+                </div>
+                <div class="range-wrapper">
+                    <input type="range" id="voice-speed" min="0.5" max="2.0" step="0.1" value="1.0">
+                    <span id="speed-value">1.0x</span>
+                </div>
+            </div>
+
+            <div class="row-card color-row">
+                <div class="row-content">
+                    <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    <span>Tint Overlay</span>
+                </div>
+                <div class="color-wrapper">
+                    <input type="color" id="overlay-color" value="#fdf6e3">
+                </div>
+            </div>
+
+            <div class="status-message" id="status-msg"></div>
+        </main>
+
+        <footer>
+            <a href="https://lock-focus.vercel.app" target="_blank">Open Lock Focus Dashboard</a>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

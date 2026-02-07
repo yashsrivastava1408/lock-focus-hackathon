@@ -48,7 +48,7 @@ const ProjectPage = () => {
                 <motion.div initial="hidden" animate="visible" variants={fadeUp}>
                     <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-secondary/60 border border-foreground/10 text-sm">
                         <Activity className="w-4 h-4 text-accent" />
-                        National Hackathon Prototype • Round 2
+                        AI-Powered Cognitive Assistant
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
@@ -94,10 +94,10 @@ const ProjectPage = () => {
                         </button>
 
                         <button
-                            onClick={() => setIsProblemOpen(true)}
+                            onClick={() => navigate("/download")}
                             className="px-10 py-4 rounded-full border border-foreground/15 hover:border-foreground/30 transition text-foreground"
                         >
-                            View Problem Statement
+                            Get Chrome Extension
                         </button>
                     </div>
 
@@ -129,15 +129,11 @@ const ProjectPage = () => {
                 <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:32px_32px]" />
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-bold">
-                            <Star className="w-4 h-4 fill-current" />
-                            For Judges
-                        </div>
                         <h2 className="text-4xl font-bold mb-4">
-                            Recommended Evaluation Path
+                            Explore the Ecosystem
                         </h2>
                         <p className="text-foreground/60 max-w-xl mx-auto">
-                            To experience the full capability of the "Lock Focus" prototype, please follow this verified testing sequence.
+                            Experience the full capability of Lock Focus.
                         </p>
                     </div>
 
@@ -211,10 +207,10 @@ const ProjectPage = () => {
             <section className="container mx-auto px-6 py-24">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl font-bold mb-4">
-                        Working Prototype Features
+                        Key Features
                     </h2>
                     <p className="text-foreground/60">
-                        These features are live and functional in the submitted prototype.
+                        Powerful tools designed for your cognitive needs.
                     </p>
                 </div>
 
@@ -400,7 +396,7 @@ const ProjectPage = () => {
                                 Lock Focus is an assistive cognitive tool and does not replace medical diagnosis.
                             </p>
                             <p className="flex items-center gap-1">
-                                Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> for Hackathon 2026
+                                Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> for Neurodiversity
                             </p>
                         </div>
                         <p className="text-center text-xs text-foreground/30 mt-4">

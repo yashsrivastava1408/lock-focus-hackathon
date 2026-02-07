@@ -50,6 +50,12 @@ const ProjectNavbar = () => {
                     {/* Theme Toggle Removed */}
 
                     {/* Auth Buttons */}
+                    <button
+                        onClick={() => navigate('/download')}
+                        className="px-5 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm transition-colors"
+                    >
+                        Download Extension
+                    </button>
 
                 </div>
             </div>

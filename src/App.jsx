@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react
 import { AnimatePresence, motion } from 'framer-motion';
 import Intro from './components/Intro';
 import LoginPage from './pages/Login';
+import DownloadPage from './pages/Download';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import FocusScan from './pages/FocusScan';
@@ -23,13 +24,20 @@ import SignUp from './pages/SignUp';
 import ScrollToTop from './components/ScrollToTop';
 
 const LandingWrapper = () => {
-  const [introComplete, setIntroComplete] = useState(false);
+  const [introComplete, setIntroComplete] = useState(() => {
+    return sessionStorage.getItem('introSeen') === 'true';
+  });
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem('introSeen', 'true');
+    setIntroComplete(true);
+  };
 
   return (
     <>
       <AnimatePresence mode="wait">
         {!introComplete && (
-          <Intro onComplete={() => setIntroComplete(true)} />
+          <Intro onComplete={handleIntroComplete} />
         )}
       </AnimatePresence>
 
@@ -57,6 +65,7 @@ function App() {
           <Route path="/" element={<LandingWrapper />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/download" element={<DownloadPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/focus-scan" element={<FocusScan />} />
           <Route path="/test-results" element={<TestResults />} />
