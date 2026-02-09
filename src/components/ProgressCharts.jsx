@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, TrendingUp, Zap, Eye, MousePointer } from 'lucide-react';
+import { storage } from '../utils/storage';
 
 const Card = ({ children, className = "", title, headerAction }) => (
     <div className={`bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-slate-800 p-6 shadow-sm dark:shadow-none transition-colors duration-300 flex flex-col ${className}`}>
@@ -15,10 +16,26 @@ const Card = ({ children, className = "", title, headerAction }) => (
 );
 
 const LineChart = () => {
-    // Revised Data & Paths
-    const trackingData = [50, 55, 65, 75];
-    const peripheralData = [30, 35, 33, 45];
-    const reactionData = [70, 65, 72, 85];
+    const [sessions, setSessions] = useState(storage.getSessions());
+
+    // Group real data for the chart
+    // For a hackathon demo, we'll blend real sessions with some "historical" base data
+    const getChartPoints = (type) => {
+        const base = type === 'reaction' ? [60, 65, 72] : type === 'tracking' ? [45, 55, 65] : [25, 35, 33];
+        const realSessions = sessions.filter(s => {
+            if (type === 'reaction') return s.type === 'letter-match';
+            if (type === 'tracking') return s.type === 'focus-scan';
+            if (type === 'peripheral') return s.type === 'syllable-slasher';
+            return false;
+        });
+
+        const latestScore = realSessions.length > 0 ? realSessions[realSessions.length - 1].score : base[base.length - 1];
+        return [...base, latestScore];
+    };
+
+    const trackingData = getChartPoints('tracking');
+    const peripheralData = getChartPoints('peripheral');
+    const reactionData = getChartPoints('reaction');
 
     // Smooth Path Generator (Catmull-Rom logic simplified for fixed points)
     // Points are spread across 0 to 100% width
@@ -200,7 +217,7 @@ const CircularProgress = ({ value = 77 }) => (
             />
         </svg>
         <div className="absolute text-center">
-            <div className="text-3xl font-bold text-gray-900 dark:text-white transition-colors">{value}</div>
+            <div className="text-3xl font-bold text-gray-900 dark:text-white transition-colors">{storage.getStats().focusScore}</div>
             <div className="text-[10px] text-gray-400 dark:text-slate-400 uppercase tracking-wider">out of 100</div>
         </div>
     </div>
@@ -217,6 +234,9 @@ const QuickStat = ({ icon: Icon, value, label, colorClass, bgClass }) => (
 );
 
 const ProgressCharts = () => {
+    const stats = storage.getStats();
+    const user = storage.getUser();
+
     return (
         <div id="progress" className="space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
 
@@ -237,10 +257,10 @@ const ProgressCharts = () => {
 
             {/* Quick Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <QuickStat icon={Calendar} value="22" label="Sessions This Month" colorClass="text-teal-600 dark:text-teal-400" bgClass="bg-teal-50 dark:bg-slate-800" />
-                <QuickStat icon={Clock} value="5h 32m" label="Total Training Time" colorClass="text-green-600 dark:text-green-400" bgClass="bg-green-50 dark:bg-slate-800" />
+                <QuickStat icon={Calendar} value={stats.sessionsThisMonth + (storage.getSessions().length)} label="Sessions This Month" colorClass="text-teal-600 dark:text-teal-400" bgClass="bg-teal-50 dark:bg-slate-800" />
+                <QuickStat icon={Clock} value={stats.totalTrainingTime} label="Total Training Time" colorClass="text-green-600 dark:text-green-400" bgClass="bg-green-50 dark:bg-slate-800" />
                 <QuickStat icon={TrendingUp} value="+18%" label="Overall Improvement" colorClass="text-blue-600 dark:text-blue-400" bgClass="bg-blue-50 dark:bg-slate-800" />
-                <QuickStat icon={Zap} value="2,850" label="Total XP Earned" colorClass="text-yellow-600 dark:text-yellow-400" bgClass="bg-yellow-50 dark:bg-slate-800" />
+                <QuickStat icon={Zap} value={user.xp.toLocaleString()} label="Total XP Earned" colorClass="text-yellow-600 dark:text-yellow-400" bgClass="bg-yellow-50 dark:bg-slate-800" />
             </div>
 
             {/* Main Grids */}

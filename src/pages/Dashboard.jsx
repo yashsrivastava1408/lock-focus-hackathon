@@ -6,6 +6,7 @@ import { Play, Activity, Brain, Layers, ArrowRight, Zap, Target, Eye, ChevronDow
 import { useTheme } from '../components/ThemeContext';
 import ProgressCharts from '../components/ProgressCharts';
 import AuroraAnimation from '../components/AuroraAnimation';
+import { storage } from '../utils/storage';
 
 const Card = ({ children, className = "", delay = 0 }) => (
     <motion.div
@@ -119,8 +120,8 @@ const Dashboard = () => {
 
                         <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Daily Focus</h3>
-                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-1">92%</p>
+                                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Level {storage.getUser().level} Explorer</h3>
+                                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-1">{storage.getUser().xp.toLocaleString()} XP</p>
                             </div>
                             <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400">
                                 <ArrowUpRight size={20} />
@@ -139,7 +140,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="text-xs text-gray-600 dark:text-gray-300 font-medium">
-                            Great job staying focused!
+                            {storage.getSessions().length > 0 ? "Real-time focus tracked!" : "Start a session to track focus!"}
                         </div>
                     </motion.div>
 
@@ -327,12 +328,12 @@ const Dashboard = () => {
                                             <circle cx="40" cy="40" r="36" className="stroke-gray-100 dark:stroke-slate-800" strokeWidth="8" fill="none" />
                                             <motion.circle
                                                 cx="40" cy="40" r="36" stroke="#2563eb" strokeWidth="8" fill="none" strokeDasharray="226"
-                                                initial={{ strokeDashoffset: 226 }} animate={{ strokeDashoffset: 226 - (226 * 0.85) }}
+                                                initial={{ strokeDashoffset: 226 }} animate={{ strokeDashoffset: 226 - (226 * (storage.getStats().focusScore / 100)) }}
                                                 transition={{ duration: 1.5, delay: 0.5 }}
                                                 className="stroke-blue-600 dark:stroke-blue-500"
                                             />
                                         </svg>
-                                        <span className="absolute text-xl font-bold text-gray-900 dark:text-white">85</span>
+                                        <span className="absolute text-xl font-bold text-gray-900 dark:text-white">{storage.getStats().focusScore}</span>
                                     </div>
 
                                     <div>

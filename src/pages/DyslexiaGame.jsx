@@ -4,6 +4,7 @@ import { ArrowLeft, RefreshCw, Trophy, Star, Check, X, HelpCircle, Play, Pause }
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import confetti from 'canvas-confetti';
+import { storage } from '../utils/storage';
 
 const GAME_DURATION = 60; // seconds
 
@@ -100,6 +101,7 @@ const DyslexiaGame = () => {
             // End game
             setGameState('summary');
             triggerConfetti();
+            storage.saveSession('letter-match', score);
         }
         return () => clearInterval(timer);
     }, [gameState, timeLeft, triggerConfetti]);

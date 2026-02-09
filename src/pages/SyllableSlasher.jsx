@@ -4,6 +4,7 @@ import { ArrowLeft, Play, Trophy, Star, RefreshCw, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import confetti from 'canvas-confetti';
+import { storage } from '../utils/storage';
 
 const SYLLABLE_DATA = [
     { word: 'FANTASTIC', syllables: ['FAN', 'TAS', 'TIC'], correctBreaks: [3, 6] },
@@ -61,6 +62,7 @@ const SyllableSlasher = () => {
             // Avoid setting state during render/effect cycle if possible, but here it transitions game state
             setGameState('summary');
             triggerConfetti();
+            storage.saveSession('syllable-slasher', score);
         }
         return () => clearInterval(timer);
     }, [gameState, timeLeft, triggerConfetti]);

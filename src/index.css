@@ -135,10 +135,10 @@
 
 /* Accessibility Modes */
 .mode-dyslexia * {
-  font-family: "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif !important;
-  letter-spacing: 0.05em !important;
-  word-spacing: 0.1em !important;
-  line-height: 2 !important;
+  font-family: "OpenDyslexic", "Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif !important;
+  letter-spacing: 0.06em !important;
+  word-spacing: 0.12em !important;
+  line-height: 1.8 !important;
 }
 
 .mode-dyslexia body,

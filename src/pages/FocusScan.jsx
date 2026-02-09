@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, ArrowRight, Play, Eye, Activity, Zap, Layers } from 'lucide-react';
 import OpticNerveAnimation from '../components/OpticNerveAnimation';
 import { useNavigate } from 'react-router-dom';
+import { storage } from '../utils/storage';
 
 const TestStep = ({ title, description, children, onNext, isLast }) => {
     return (
@@ -154,7 +155,7 @@ const ReactionTimeTest = ({ onComplete }) => {
     );
 };
 
-const ASRSQuestion = ({ question, options = ["Never", "Rarely", "Sometimes", "Often", "Very Often"] }) => {
+const ASRSQuestion = ({ question, options = ["Never", "Rarely", "Sometimes", "Often", "Very Often"], onSelect }) => {
     const [selected, setSelected] = useState(null);
     return (
         <div className="space-y-4">
@@ -163,7 +164,10 @@ const ASRSQuestion = ({ question, options = ["Never", "Rarely", "Sometimes", "Of
                 {options.map((opt, i) => (
                     <button
                         key={i}
-                        onClick={() => setSelected(i)}
+                        onClick={() => {
+                            setSelected(i);
+                            onSelect(i);
+                        }}
                         className={`relative z-10 cursor-pointer py-3 px-2 rounded-xl text-sm font-medium transition-all duration-300 border ${selected === i
                             ? 'bg-blue-600 border-blue-500 text-white shadow-lg scale-105'
                             : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:border-slate-600'
@@ -254,7 +258,12 @@ const FocusScan = () => {
     const textWordCount = 60;
 
     // Preferences
-    const [measures, setMeasures] = useState({ reaction: 0, crowding: 'standard', contrast: 'Pending' });
+    const [measures, setMeasures] = useState({
+        reaction: 0,
+        crowding: 'standard',
+        contrast: 'Pending',
+        asrs: [0, 0] // Store index (0-4) for each question
+    });
 
     useEffect(() => {
         let interval;
@@ -280,7 +289,21 @@ const FocusScan = () => {
         } else {
             const reactionScore = Math.max(0, 100 - (measures.reaction / 10));
             const wpmScore = Math.min(100, (wpm / 300) * 100);
-            const totalScore = Math.round((reactionScore + wpmScore) / 2) || 85;
+
+            // Calculate attention score from ASRS (higher selection = lower focus)
+            const asrsAvg = measures.asrs.reduce((a, b) => a + b, 0) / (measures.asrs.length || 1);
+            const attentionScore = Math.max(0, 100 - (asrsAvg * 25));
+
+            const totalScore = Math.round((reactionScore + wpmScore + attentionScore) / 3) || 85;
+
+            // Persist to local "database"
+            storage.saveSession('focus-scan', totalScore, {
+                wpm: wpm || 250,
+                reactionTime: measures.reaction,
+                contrast: measures.contrast,
+                crowding: measures.crowding,
+                attentionLevel: attentionScore
+            });
 
             navigate('/test-results', {
                 state: {
@@ -289,7 +312,8 @@ const FocusScan = () => {
                     profile: {
                         type: measures.crowding === 'spaced' ? 'Visual Sensitivity' : 'Neuro-Typical',
                         needsFocusMode: measures.crowding === 'spaced'
-                    }
+                    },
+                    measures // Pass all raw measures for detailed breakdown
                 }
             });
         }
@@ -337,8 +361,14 @@ const FocusScan = () => {
                     {step === 0 && (
                         <TestStep key="0" title="Attention Baseline" description="Do you often find yourself..." onNext={nextStep}>
                             <div className="flex flex-col gap-12">
-                                <ASRSQuestion question="Having trouble waiting your turn in situations when turn-taking is required?" />
-                                <ASRSQuestion question="Feeling distracted by activity or noise around you?" />
+                                <ASRSQuestion
+                                    question="Having trouble waiting your turn in situations when turn-taking is required?"
+                                    onSelect={(val) => setMeasures(p => ({ ...p, asrs: [val, p.asrs[1]] }))}
+                                />
+                                <ASRSQuestion
+                                    question="Feeling distracted by activity or noise around you?"
+                                    onSelect={(val) => setMeasures(p => ({ ...p, asrs: [p.asrs[0], val] }))}
+                                />
                             </div>
                         </TestStep>
                     )}

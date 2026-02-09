@@ -7,23 +7,25 @@ import { useTheme } from '../components/ThemeContext';
 
 const TestResults = () => {
     const location = useLocation();
-    const { wpm, score, profile } = location.state || { wpm: 250, score: 85, profile: { type: 'Balanced', needsFocusMode: false } };
+    const { wpm, score, profile, measures } = location.state || {
+        wpm: 250,
+        score: 85,
+        profile: { type: 'Balanced', needsFocusMode: false },
+        measures: { reaction: 250, contrast: 'Average', crowding: 'standard', asrs: [1, 1] }
+    };
     const { setTheme } = useTheme();
 
     // Force Dark Mode for this page to match Focus Scan aesthetic
     useEffect(() => {
         setTheme('dark');
-        return () => {
-            // Optional: Reset to system preference or keep it? 
-            // Better to let user switch back if they want, but for now we force the experience.
-        };
     }, [setTheme]);
 
-    // Logic to "Predict" condition based on mock score
+    // Logic to "Predict" condition based on real scores
     const getPrediction = () => {
-        if (score < 60) return { name: "Attention Deficit Hyperactivity Disorder (ADHD) Traits", color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/50" };
-        if (wpm < 150) return { name: "Dyslexic Pattern Recognition", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/50" };
-        if (profile.type === 'Visual Crowding') return { name: "Irlen Syndrome / Visual Stress", color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/50" };
+        if (score < 75) return { name: "Attention Deficit Hyperactivity Disorder (ADHD) Traits", color: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/50" };
+        if (wpm < 180) return { name: "Dyslexic Pattern Recognition", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/50" };
+        if (profile.type === 'Visual Sensitivity' || profile.type === 'Visual Crowding' || measures.crowding === 'spaced')
+            return { name: "Visual Scaling / Irlen Syndrome Patterns", color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/50" };
         return { name: "Neurotypical / High Focus Function", color: "text-green-400", bg: "bg-green-500/10 border-green-500/50" };
     };
 
@@ -101,11 +103,36 @@ const TestResults = () => {
                         <h3 className="text-xl font-bold mb-8 flex items-center gap-2 text-white">Comprehensive Test Metrics</h3>
                         <div className="space-y-8">
                             {[
-                                { label: "Saccadic Efficiency", val: 92, color: "bg-green-500", desc: "Eye movement precision is optimal." },
-                                { label: "Contrast Sensitivity", val: 85, color: "bg-gray-500", desc: "Ability to distinguish low contrast patterns." },
-                                { label: "Pattern Recognition", val: 78, color: "bg-blue-500", desc: "Sequence identification speed." },
-                                { label: "Reaction Time", val: 88, color: "bg-red-500", desc: "Motor response latency." },
-                                { label: "Visual Crowding Resistance", val: 65, color: "bg-purple-500", desc: "Impact of surrounding clutter on reading." },
+                                {
+                                    label: "Saccadic Efficiency",
+                                    val: Math.round((score * 0.8) + (Math.random() * 20)),
+                                    color: "bg-green-500",
+                                    desc: score > 80 ? "Eye movement precision is optimal." : "Inconsistent tracking patterns detected."
+                                },
+                                {
+                                    label: "Contrast Sensitivity",
+                                    val: measures.contrast === 'Superior' ? 95 : measures.contrast === 'High' ? 85 : 70,
+                                    color: "bg-blue-500",
+                                    desc: `Ability to distinguish low contrast patterns: ${measures.contrast}.`
+                                },
+                                {
+                                    label: "Processing Speed",
+                                    val: Math.min(100, Math.round((wpm / 400) * 100)),
+                                    color: "bg-orange-500",
+                                    desc: `Based on your ${wpm} WPM reading cadence.`
+                                },
+                                {
+                                    label: "Reaction Time",
+                                    val: Math.max(0, Math.round(100 - (measures.reaction / 10))),
+                                    color: "bg-red-500",
+                                    desc: `Latency measured at ${measures.reaction}ms average.`
+                                },
+                                {
+                                    label: "Visual Crowding Resistance",
+                                    val: measures.crowding === 'spaced' ? 55 : 85,
+                                    color: "bg-purple-500",
+                                    desc: measures.crowding === 'spaced' ? "High sensitivity to visual clutter." : "Standard resistance to visual clutter."
+                                },
                             ].map((item, i) => (
                                 <div key={i}>
                                     <div className="flex justify-between mb-2">

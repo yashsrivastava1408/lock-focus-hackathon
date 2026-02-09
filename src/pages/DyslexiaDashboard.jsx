@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { ArrowLeft, BookOpen, RefreshCw, Sparkles, Brain, MousePointer2, AlignLeft, Star, ZapIcon } from 'lucide-react';
+import { ArrowLeft, BookOpen, RefreshCw, Sparkles, Brain, MousePointer2, AlignLeft, Star, ZapIcon, Palette, Eye, EyeOff, Type } from 'lucide-react';
 import FocusRuler from '../components/FocusRuler';
 import ProgressCharts from '../components/ProgressCharts';
 
@@ -21,14 +21,42 @@ const toBionic = (text) => {
     });
 };
 
+const ColorFilters = [
+    { id: 'none', label: 'Clear', color: 'transparent', class: '' },
+    { id: 'yellow', label: 'Amber', color: '#fef08a', class: 'bg-yellow-200/20' },
+    { id: 'blue', label: 'Sky', color: '#bae6fd', class: 'bg-blue-200/20' },
+    { id: 'green', label: 'Mint', color: '#bbf7d0', class: 'bg-green-200/20' },
+    { id: 'pink', label: 'Rose', color: '#fecdd3', class: 'bg-pink-200/20' },
+];
+
 const DyslexiaDashboard = () => {
     const [isFocusRulerActive, setIsFocusRulerActive] = useState(false);
     const [isBionicActive, setIsBionicActive] = useState(false);
+    const [isDyslexicFont, setIsDyslexicFont] = useState(false);
+    const [activeFilter, setActiveFilter] = useState('none');
+
+    const renderText = (text) => {
+        return isBionicActive ? toBionic(text) : text;
+    };
 
     return (
         <DashboardLayout>
-            <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-100/40 via-background to-background dark:from-blue-900/20 dark:via-background dark:to-background">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+            <div className={`min-h-screen transition-all duration-500 ${isDyslexicFont ? 'mode-dyslexia' : ''} bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-100/40 via-background to-background dark:from-blue-900/20 dark:via-background dark:to-background`}>
+
+                {/* Color Overlay Filter */}
+                <AnimatePresence>
+                    {activeFilter !== 'none' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 pointer-events-none z-[9999] mix-blend-multiply"
+                            style={{ backgroundColor: ColorFilters.find(f => f.id === activeFilter).color + '25' }}
+                        />
+                    )}
+                </AnimatePresence>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 relative z-10">
 
                     {/* Header */}
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -43,7 +71,7 @@ const DyslexiaDashboard = () => {
                                     </span>
                                 </div>
                                 <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
-                                    Dyslexia Support
+                                    {renderText("Dyslexia Support")}
                                 </h1>
                             </div>
                         </div>
@@ -67,13 +95,10 @@ const DyslexiaDashboard = () => {
                         >
                             <div className="relative z-10">
                                 <h2 className="text-3xl font-bold text-foreground mb-4 leading-tight">
-                                    {isBionicActive ? toBionic("Find your perfect reading flow.") : "Find your perfect reading flow."}
+                                    {renderText("Find your perfect reading flow.")}
                                 </h2>
                                 <p className="text-muted-foreground text-lg mb-8 max-w-xl leading-relaxed">
-                                    {isBionicActive
-                                        ? toBionic("Customize your workspace with tools designed to enhance focus, readability, and comprehension.")
-                                        : "Customize your workspace with tools designed to enhance focus, readability, and comprehension."
-                                    }
+                                    {renderText("Customize your workspace with tools designed to enhance focus, readability, and comprehension.")}
                                 </p>
 
                                 <div className="flex flex-wrap gap-4">
@@ -104,6 +129,20 @@ const DyslexiaDashboard = () => {
                                             {isBionicActive ? 'ON' : 'OFF'}
                                         </span>
                                     </button>
+
+                                    <button
+                                        onClick={() => setIsDyslexicFont(!isDyslexicFont)}
+                                        className={`h-12 px-6 rounded-xl flex items-center gap-2.5 font-semibold transition-all duration-300 ${isDyslexicFont
+                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/25 scale-105'
+                                            : 'glass hover:bg-white/50 dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <Type size={18} />
+                                        <span>Dyslexic Font</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isDyslexicFont ? 'bg-white/20' : 'bg-gray-100 dark:bg-slate-700'}`}>
+                                            {isDyslexicFont ? 'ON' : 'OFF'}
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -113,36 +152,45 @@ const DyslexiaDashboard = () => {
                             </div>
                         </motion.div>
 
-                        {/* Quick Stats / Motivation */}
+                        {/* Visual Stress Filters */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-8 text-white relative overflow-hidden flex flex-col justify-between shadow-xl shadow-indigo-500/10"
+                            className="glass-card rounded-3xl p-8 flex flex-col justify-between"
                         >
-                            <div className="relative z-10">
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl">
-                                        <Star className="text-yellow-300 fill-yellow-300" size={24} />
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-3xl font-bold">Lvl 4</div>
-                                        <div className="text-indigo-100 text-sm">Scholar</div>
-                                    </div>
+                            <div>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Palette className="text-orange-500" size={20} />
+                                    <h3 className="font-bold text-lg">Visual Stress Filters</h3>
                                 </div>
-                                <div>
-                                    <div className="flex justify-between text-sm font-medium mb-2 text-indigo-100">
-                                        <span>Next Reward</span>
-                                        <span>850 / 1000 XP</span>
-                                    </div>
-                                    <div className="h-2 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
-                                        <div className="h-full bg-white/90 rounded-full w-[85%] shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                                    </div>
+                                <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
+                                    Irlen filters can reduce "visual stress" by changing the background contrast. Find the color that feels best for you.
+                                </p>
+                                <div className="grid grid-cols-5 gap-3">
+                                    {ColorFilters.map(filter => (
+                                        <button
+                                            key={filter.id}
+                                            onClick={() => setActiveFilter(filter.id)}
+                                            className={`group relative h-12 rounded-xl transition-all flex items-center justify-center border-2
+                                                ${activeFilter === filter.id ? 'border-orange-500 scale-110' : 'border-transparent hover:border-gray-200 dark:hover:border-slate-700'}`}
+                                            title={filter.label}
+                                        >
+                                            <div
+                                                className={`w-8 h-8 rounded-lg shadow-inner ${filter.id === 'none' ? 'border border-dashed border-gray-300' : ''}`}
+                                                style={{ backgroundColor: filter.color }}
+                                            />
+                                            {filter.id === 'none' && <EyeOff size={12} className="absolute text-gray-400" />}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-
-                            {/* Animated blobs */}
-                            <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1),_transparent_70%)] animate-spin-slow pointer-events-none" />
+                            <div className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800">
+                                <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                                    <span>Active Filter</span>
+                                    <span className="text-orange-500">{ColorFilters.find(f => f.id === activeFilter).label}</span>
+                                </div>
+                            </div>
                         </motion.div>
                     </div>
 
@@ -158,7 +206,7 @@ const DyslexiaDashboard = () => {
                             {[
                                 {
                                     title: "Letter Mirror Match",
-                                    desc: "Train distinguishing b/d, p/q.",
+                                    desc: "Train distinguishing b/d, p/q and mirrored characters.",
                                     icon: RefreshCw,
                                     color: "blue",
                                     path: "/dyslexia-game",
@@ -166,7 +214,7 @@ const DyslexiaDashboard = () => {
                                 },
                                 {
                                     title: "Immersive Reader",
-                                    desc: "Focus mode with text-to-speech.",
+                                    desc: "A distraction-free mode with text-to-speech and custom fonts.",
                                     icon: BookOpen,
                                     color: "emerald",
                                     path: "/reader",
@@ -174,7 +222,7 @@ const DyslexiaDashboard = () => {
                                 },
                                 {
                                     title: "Syllable Slasher",
-                                    desc: "Break down complex words.",
+                                    desc: "Master the art of chunking complex words into sounds.",
                                     icon: ZapIcon,
                                     color: "orange",
                                     path: "/syllable-slasher",
@@ -194,9 +242,9 @@ const DyslexiaDashboard = () => {
                                             <item.icon size={26} />
                                         </div>
 
-                                        <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
+                                        <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">{renderText(item.title)}</h3>
                                         <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                                            {item.desc}
+                                            {renderText(item.desc)}
                                         </p>
 
                                         <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-sm font-bold opacity-60 group-hover:opacity-100 transition-opacity">

@@ -177,11 +177,11 @@ const ADHDDashboard = () => {
                                 },
                                 {
                                     title: "Time Blindness",
-                                    desc: "Visual timers to manage tasks. Coming soon!",
+                                    desc: "Visual timers to manage tasks. Calibrate your internal clock.",
                                     icon: LayoutGrid,
                                     color: "purple",
-                                    path: "#",
-                                    action: "Coming Soon"
+                                    path: "/time-blindness",
+                                    action: "Play Now"
                                 }
                             ].map((item, idx) => (
                                 <Link to={item.path} key={idx} className="group">

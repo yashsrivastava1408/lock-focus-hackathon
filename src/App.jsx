@@ -16,6 +16,7 @@ import SyllableSlasher from './pages/SyllableSlasher';
 import PeripheralVisionGame from './pages/PeripheralVisionGame';
 import PeriQuestGame from './pages/PeriQuestGame';
 import AdaptivePdfReader from './pages/AdaptivePdfReader';
+import TimeBlindnessGame from './pages/TimeBlindnessGame';
 
 import { ThemeProvider } from './components/ThemeContext';
 import ProjectPage from './pages/ProjectPage';
@@ -78,6 +79,7 @@ function App() {
           <Route path="/syllable-slasher" element={<SyllableSlasher />} />
           <Route path="/peripheral-vision" element={<PeriQuestGame />} />
           <Route path="/peripheral-vision-info" element={<PeripheralVisionGame />} />
+          <Route path="/time-blindness" element={<TimeBlindnessGame />} />
         </Routes>
       </Router>
     </ThemeProvider>
