@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { useEyeTracking } from '../hooks/useEyeTracking';
+import { storage } from '../utils/storage';
 
 // ==================== GAME CONFIGURATION ====================
 const CONFIG = {
@@ -422,6 +423,18 @@ const PeriQuestGame = () => {
 
     const endGame = () => {
         setGameState('RESULTS');
+
+        // Persist Session
+        storage.saveSession('peri-quest', score, {
+            level,
+            accuracy: parseFloat(metrics.totalStimuli > 0 ? ((metrics.correctReactions / metrics.totalStimuli) * 100).toFixed(1) : 0),
+            avgReactionTime: metrics.reactionTimes.length > 0
+                ? Math.round(metrics.reactionTimes.reduce((a, b) => a + b, 0) / metrics.reactionTimes.length)
+                : 0,
+            fixationBreaks: metrics.fixationBreaks,
+            fieldPerformance: metrics.fieldPerformance
+        });
+
         if (score > 500) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         }

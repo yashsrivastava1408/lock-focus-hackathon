@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import * as tf from '@tensorflow/tfjs';
 import * as blazeface from '@tensorflow-models/blazeface';
 import { Lock, Unlock, Trophy, FastForward } from 'lucide-react';
+import { storage } from '../utils/storage';
 
 const LEVEL_CONFIG = [
     { id: 1, name: "Beginner", speed: 2, duration: 15, desc: "Mental Warm-up", color: "from-emerald-500 to-teal-500" },
@@ -223,11 +224,26 @@ const FocusFlow = () => {
         const focusedSamples = attentionHistoryRef.current.filter(a => a === 1).length;
         const attentionPct = totalSamples > 0 ? Math.round((focusedSamples / totalSamples) * 100) : 0;
 
-        setFinalAnalytics({
+        const reflexTime = Math.round(Math.max(120, 450 - (speedRef.current * 15)));
+        const consistency = Math.round(Math.max(60, Math.min(98, 70 + (scoreRef.current / 200))));
+
+        const analytics = {
             attentionPct,
             gazeHistory: [...gazeHistoryRef.current],
-            reflexTime: Math.round(Math.max(120, 450 - (speedRef.current * 15))), // Rounded
-            consistency: Math.round(Math.max(60, Math.min(98, 70 + (scoreRef.current / 200)))) // Rounded
+            reflexTime,
+            consistency
+        };
+
+        setFinalAnalytics(analytics);
+
+        // Persist Session
+        storage.saveSession('focus-flow', scoreRef.current, {
+            level: currentLevel.id,
+            difficulty: currentLevel.name,
+            success,
+            neuroMode: neuroModeRef.current,
+            attentionScore: attentionPct,
+            consistency
         });
 
         if (success) {
@@ -798,13 +814,11 @@ const FocusFlow = () => {
                                             }}
                                             className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
                                         >
-                                            <Camera size={18} />
-                                            Enable Camera & Continue
+                                            <Camera size={18} /> Enable & Continue
                                         </button>
-
                                         <button
                                             onClick={() => setShowDisclaimer(false)}
-                                            className="w-full py-3 bg-transparent hover:bg-white/5 text-slate-400 hover:text-white font-medium rounded-xl transition-colors text-xs uppercase tracking-widest"
+                                            className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition-colors text-sm"
                                         >
                                             Continue Without Camera
                                         </button>
@@ -815,9 +829,6 @@ const FocusFlow = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="mt-8 text-white/30 text-xs font-mono">
-                    [LEFT/RIGHT ARROW] or [TAP LANES] to move
-                </div>
             </div>
         </DashboardLayout>
     );
