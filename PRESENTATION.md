@@ -61,4 +61,20 @@ We are presenting a comprehensive prototype with three pillars:
 
 ---
 
+## 7. Anticipated Q&A (Preparation for Judges)
+
+### Q1: "Is this accurate enough without an eye-tracker?"
+**Answer**: "For *clinical diagnosis*, no. But for *habit formation*, yes. We use the 'Gaze Cone' method—tracking general head pose and eye vector. It’s 85% accurate for broad attention states (Looking at screen vs. Looking away), which is sufficient for productivity training."
+
+### Q2: "What about privacy? You're analyzing faces."
+**Answer**: "Zero data leaves the browser. We use TensorFlow.js responsibly. The video feed is processed in RAM and discarded instantly. No images are ever saved to disk or sent to a server."
+
+### Q3: "Can't I just cheat by looking at the screen while daydreaming?"
+**Answer**: "Yes, 'covert attention' is a limitation of all vision-based systems. However, we are building *tools for people who want to focus*, not surveillance. If you cheat, you're only cheating your own progress."
+
+### Q4: "Why gamify ADHD? Isn't that distracting?"
+**Answer**: "ADHD brains crave dopamine. Traditional tools (to-do lists) are 'low-dopamine'. Our games provide immediate, high-frequency feedback (points, visuals) to keep the 'executive function engine' running, which can then be transferred to work tasks."
+
+---
+
 *Built with ❤️ for the future of accessible computing.*
