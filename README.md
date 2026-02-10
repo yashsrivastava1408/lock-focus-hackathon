@@ -7,7 +7,7 @@ Lock Focus is a privacy-first web platform designed to assess, track, and improv
 
 ## Architecture and Data Flow
 
-Lock Focus runs entirely client-side to ensure privacy and low latency. It leverages persistent browser storage and local AI models.
+Lock Focus runs entirely client-side to ensure privacy and low latency. It leverages persistent browser storage and high-precision MediaPipe AI models for gaze estimation.
 
 ## System Architecture
 
@@ -19,57 +19,58 @@ flowchart TB
         direction TB
         UI[["React UI Components"]]
         Logic{"Game & App Logic"}
-        AI(("AI/ML Engine<br/>TensorFlow.js"))
+        AI(("AI/ML Engine<br/>MediaPipe Tasks Vision"))
         Storage[("Local Persistence")]
     end
 
-    style Client fill:#f9f9f9,stroke:#333,stroke-width:2px
-    style UI fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    style Logic fill:#fff9c4,stroke:#fbc02d,stroke-width:2px
-    style AI fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px,color:#fff
-    style Storage fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style Client fill:#0a0f1d,stroke:#1e293b,stroke-width:2px,color:#fff
+    style UI fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style Logic fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+    style AI fill:#1e293b,stroke:#a855f7,stroke-width:2px,color:#fff
+    style Storage fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
 
     UI -->|Events| Logic
     Logic -->|State Updates| UI
     Logic -->|Inference Request| AI
-    AI -->|Attention Probability| Logic
+    AI -->|Gaze & Face Landmarks| Logic
     Logic -->|Save Progress| Storage
     Storage -->|Load Profile| Logic
 ```
 
 ## Data Flow Pipeline
 
-A privacy-first pipeline where video feeds are processed instantaneously in memory.
+A privacy-first pipeline where video feeds are processed instantaneously in memory with zero data transmission.
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Cam as 📷 Camera Feed
-    participant Blaze as 🧠 TensorFlow (Blazeface)
-    participant Engine as ⚙️ Attention Engine
+    participant MP as 🧠 MediaPipe (Face Landmarker)
+    participant Engine as ⚙️ Gaze Engine
     participant App as 🎮 Focus Flow / Reader
     participant Store as 💾 LocalStorage
 
-    Note over Cam, Store: 🔒 Privacy Barrier: No external transmission
+    Note over Cam, Store: 🔒 Privacy Barrier: Local-Only Processing
 
-    Cam->>Blaze: Raw Video Frame (60fps)
-    activate Blaze
-    Blaze->>Engine: Face Landmarks (128pts)
-    deactivate Blaze
+    Cam->>MP: Raw Video Frame (60fps)
+    activate MP
+    MP->>Engine: 478 Face Landmarks + Iris Data
+    deactivate MP
     
     activate Engine
-    Engine->>Engine: Calculate Eye-Nose Vector
-    Engine->>App: Attention State (Focused/Distracted)
+    Engine->>Engine: Calculate Pupil-to-Corner Ratio
+    Engine->>Engine: Analyze Head Pose (Nose/Cheek Vector)
+    Engine->>App: Gaze Coordinates (x, y) + Fixation State
     deactivate Engine
     
     activate App
     alt Focus Flow
-        App->>App: Update Game Physics
+        App->>App: Update Level Physics / Neuro-Pilot
     else Adaptive Reader
-        App->>App: Adjust Text Opacity
+        App->>App: Dynamic Opacity & Font Scaling
     end
     
-    App-->>Store: Save Session Metrics (Async)
+    App-->>Store: Save Session Metrics via storage.js
     deactivate App
 ```
 
@@ -77,60 +78,49 @@ sequenceDiagram
 
 ## Key Features
 
-### 1. Head-Pose Gaze Sensing
-The core of the ecosystem is a real-time gaze sensing engine powered by TensorFlow.js.
-- **Mechanism**: Calculates head-pose by measuring horizontal nose-to-eye alignment using BlazeFace landmarks.
-- **Accuracy**: Detects attention drift even when the user's face remains within the camera frame, providing a more realistic attention signal than simple face presence.
+### 1. High-Precision Gaze Sensing
+The core of the ecosystem is a real-time gaze sensing engine powered by MediaPipe Iris Tracking.
+- **Mechanism**: Tracks pupil movement relative to the eye corners (canthus) to determine looking direction without requiring fixed calibration.
+- **Head Pose Integration**: Combines iris data with head-pose orientation (nose-to-cheek alignment) to detect when a user is "Away" or "Distracted".
+- **Stability**: Implements Exponential Moving Average (EMA) smoothing to eliminate tracking jitter.
 
-### 2. Focus Flow: Progression and Training
+### 2. Focus Flow: Neuro-Pilot Training
 A high-intensity flow trainer that uses the Gaze Sensing engine for input.
-- **Neuro-Pilot Mode**: The game steers itself as long as the user maintains focus.
-- **Progression**: Five difficulty levels with scaling speed and session durations.
-- **Persistence**: Level unlocks are stored locally to track long-term progression.
+- **Neuro-Pilot Mode**: The game steers itself as long as the user maintains focus on the center. Looking away pauses progress.
+- **Progression**: Five difficulty levels (Beginner to Master) with scaling speed and session durations.
+- **Persistence**: Level unlocks and session history are stored locally to track long-term cognitive endurance.
 
 ### 3. Chronos Match (Time Blindness Training)
-A rhythm-based estimation game designed to improve internal clock accuracy for ADHD users.
-- **Chaos Mode**: Simulates real-world distractions (notifications, thoughts) to train focus under pressure.
-- **Scoring**: Uses high-precision timing to measure estimation accuracy against a target duration.
-- **Streak System**: Rewards consistent timing with visual flair.
+A rhythm-based estimation game designed to improve internal clock accuracy, specifically for ADHD users.
+- **Chaos Mode**: Simulates real-world distractions (notifications, visual noise) to train focus under pressure.
+- **Scoring**: Measures millisecond-level estimation accuracy against target durations.
 
-### 3. Neuro-Report Analytics
-A post-session diagnostic dashboard that provides technical proof of cognitive performance.
-- **Gaze Heatmap**: A spatial distribution map showing where the user's focus was physically directed.
-- **Neural Latency**: Estimates reflex time based on peak performance speed.
-- **Consistency Score**: Calculates the percentage of time spent in an optimal flow state.
-
-### 4. Intelligent Adaptive Reader
+### 4. Adaptive PDF Reader & OCR
 A reading environment that proactively responds to the user's attention.
-- **Attention Dimming**: Automatically dims and de-focuses text when an attention drift is detected.
-- **OCR Support**: Converts static PDFs into accessible, gaze-reactive documents.
+- **Condition-Specific Modes**: Specialized UI profiles for **Dyslexia** (OpenDyslexic-style spacing), **ADHD** (clutter reduction), and **Vision Stress** (muted contrast).
+- **OCR Intelligence**: Uses Tesseract.js to convert static images or legacy PDFs into accessible, gaze-reactive text.
 
 ---
 
 ## Step-by-Step Walkthrough
 
 ### Step 1: Initialize the Application
-1. Open the application at the deployed URL or `http://localhost:5173`.
-2. Scroll to the "Vision Simulator" on the landing page to view ADHD and Dyslexia simulations.
+1. Open the application and experience the "Lock Focus" neural intro.
+2. Explore "Vision Studio" on the landing page for neuro-diversity simulations.
 
 ### Step 2: Access the Dashboard
-1. Click "Dashboard" to enter the ADHD-focused management area.
-2. Note the focus metrics that track your session quality.
+1. Click "Dashboard" to enter the centralized management hub.
+2. Review focus metrics and rolling performance stats.
 
-### Step 3: Test Gaze Sensing in Focus Flow
-1. Navigate to Games -> Focus Flow.
-2. Enable the camera through the privacy-first calibration modal.
-3. Start a session in "Neuro-Pilot" mode.
-4. Verify that turning your head away causes the "Attention Signal" on the HUD to shift to "Distracted" or "Away".
+### Step 3: Test Neuro-Pilot in Focus Flow
+1. Navigate to **Games -> Focus Flow**.
+2. Enable the camera (Local Processing Only).
+3. Start a session in **Neuro-Pilot** mode.
+4. Observe how looking left/right steers the ship and looking away pauses the game.
 
-### Step 4: Review Gaze Analytics
-1. Complete a session in Focus Flow.
-2. Analyze the Gaze Heatmap on the Neuro-Report dashboard to see your fixation patterns.
-
-### Step 5: Test the Adaptive Reader
-1. Navigate to the Reader.
-2. Enable "Neuro-Sensing" via the settings toolbar.
-3. Observe how the text dims when you look away from the document.
+### Step 4: Review Neuro-Analytics
+1. Complete a session to generate a **Neuro-Report**.
+2. Analyze your **Focus Consistency Score** and estimated **Neural Latency**.
 
 ---
 
@@ -138,46 +128,40 @@ A reading environment that proactively responds to the user's attention.
 
 ```bash
 src/
-├── components/        # Reusable UI elements (ProjectNavbar, VisionSimulator)
-├── layouts/           # Page layouts (DashboardLayout)
+├── components/        # UI Modules (Aurora, NerveAnimation, VisionSimulator)
+├── layouts/           # Page Wrappers (DashboardLayout)
+├── hooks/             # Core Logic (useEyeTracking.js - MediaPipe Integration)
 ├── pages/
-│   ├── FocusFlow.jsx        # Neuro-Pilot Game Logic
-│   ├── Dashboard.jsx        # ADHD Hub & Vision Studio
-│   ├── AdaptivePdfReader.jsx # Accessibility Reader
+│   ├── FocusFlow.jsx        # Neuro-Pilot Game
+│   ├── Dashboard.jsx        # ADHD/Focus Management Hub
+│   ├── AdaptivePdfReader.jsx # Accessibility OCR Reader
 │   ├── TimeBlindnessGame.jsx # Chronos Match
-│   ├── ProjectPage.jsx      # Landing Page
-│   └── ...
-├── utils/             # Helper functions (storage.js)
-└── App.jsx            # Routing & Entry Point
+│   ├── SyllableSlasher.jsx   # Literacy Training
+│   ├── ZenDrive.jsx         # Peripheral Vision Simulator
+│   ├── ProjectPage.jsx      # Landing Experience
+│   └── ... (20+ specialized pages)
+├── utils/             # Helpers (storage.js - Local Persistence)
+└── App.js             # Routing & Dynamic Imports
 ```
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: React (Vite), Tailwind CSS, Framer Motion
-- **AI/ML**: TensorFlow.js (Blazeface model), Tesseract.js (OCR)
-- **Visualization**: Recharts, Canvas API, Canvas Confetti
+- **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion
+- **AI/ML**: MediaPipe (@mediapipe/tasks-vision), Tesseract.js (OCR)
+- **Engine**: Canvas API for high-performance game rendering
+- **Storage**: JSON-based Browser LocalStorage Logic (Privacy-First)
 - **Icons**: Lucide React
 
 ---
 
 ## Privacy and Ethics
 
-Lock Focus is built with privacy-by-design principles:
-- **Local Processing**: All video data is processed entirely in the browser memory.
-- **No Storage**: No video or images are stored or transmitted to any server.
-- **User Consent**: Camera access is opt-in and handled via clear disclaimer modals.
-
-## Security Features
-1.  **Strict Content Security Policy (CSP)**:
-    -   Restricts script sources to `'self'` and trusted providers (`unpkg`, `jsdelivr`).
-    -   Blocks unauthorized object/frame injections.
-2.  **Hardened Headers**:
-    -   `X-Content-Type-Options: nosniff`: Prevents MIME-sniffing attacks.
-    -   `Referrer-Policy: strict-origin-when-cross-origin`: Protects user navigation data.
-3.  **Dependency Safety**:
-    -   Minimal external dependencies, with verified CDNs for model loading.
+Lock Focus is built with **Privacy-by-Design**:
+- **Zero-Transmission**: Video streams never leave the browser; processing happens in-memory and is discarded immediately.
+- **No Biometrics**: We track mathematical vectors (points), not faces or identities.
+- **Opt-in Only**: Camera access is explicitly requested per session with clear disclaimers.
 
 ---
 
