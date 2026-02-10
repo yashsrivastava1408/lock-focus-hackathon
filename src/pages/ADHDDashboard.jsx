@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { ArrowLeft, BookOpen, Target, Sparkles, Brain, MousePointer2, Zap, Star, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, BookOpen, Target, Sparkles, Brain, MousePointer2, Zap, Star, LayoutGrid, MessageCircle } from 'lucide-react';
 import FocusRuler from '../components/FocusRuler'; // Assuming we can reuse this or it exists
 import ProgressCharts from '../components/ProgressCharts';
 
@@ -182,6 +182,14 @@ const ADHDDashboard = () => {
                                     color: "purple",
                                     path: "/time-blindness",
                                     action: "Play Now"
+                                },
+                                {
+                                    title: "ADHD Support Chat",
+                                    desc: "AI companion for task management, coping strategies, and support.",
+                                    icon: MessageCircle,
+                                    color: "blue",
+                                    path: "/adhd-chatbot",
+                                    action: "Start Chat"
                                 }
                             ].map((item, idx) => (
                                 <Link to={item.path} key={idx} className="group">
@@ -193,6 +201,7 @@ const ADHDDashboard = () => {
                                             ${item.color === 'amber' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : ''}
                                             ${item.color === 'emerald' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : ''}
                                             ${item.color === 'purple' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' : ''}
+                                            ${item.color === 'blue' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : ''}
                                         `}>
                                             <item.icon size={26} />
                                         </div>
@@ -206,6 +215,7 @@ const ADHDDashboard = () => {
                                             <span className={`${item.color === 'amber' ? 'text-amber-600 dark:text-amber-400' : ''}
                                                 ${item.color === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' : ''}
                                                 ${item.color === 'purple' ? 'text-purple-600 dark:text-purple-400' : ''}
+                                                ${item.color === 'blue' ? 'text-blue-600 dark:text-blue-400' : ''}
                                             `}>{item.action}</span>
                                             <ArrowLeft className="rotate-180 w-4 h-4" />
                                         </div>
