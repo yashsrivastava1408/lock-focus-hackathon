@@ -121,6 +121,24 @@ const ColorMatchGame = () => {
             setIsSuccess(true);
             // Save session in storage
             storage.saveSession('color-match', sim, { level: level + 1 });
+
+            // --- BACKEND INTEGRATION ---
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (user && user.user_id) {
+                    import('../services/api').then(m => {
+                        m.api.submitScore(
+                            user.user_id,
+                            sim,
+                            "ColorMatch",
+                            level + 1,
+                            0,
+                            {}
+                        ).then(res => console.log("ColorMatch Score Saved:", res));
+                    });
+                }
+            } catch (e) { console.error("ColorMatch save error", e); }
+            // ---------------------------
         }
     }, [mixedColor, target, level]);
 

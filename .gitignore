@@ -27,3 +27,13 @@ dist-ssr
 node_modules/
 dist/
 .env
+
+# Backend
+backend/app.db
+backend/__pycache__/
+backend/*.pyc
+backend/.venv
+backend/venv
+*.db
+*.sqlite3
+backend/debug_db.py

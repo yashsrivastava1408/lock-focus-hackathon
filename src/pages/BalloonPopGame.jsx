@@ -136,6 +136,24 @@ const BalloonPopGame = () => {
                 if (newValue <= 0) {
                     setIsSuccess(true);
                     storage.saveSession('balloon-pop', 100, { level });
+
+                    // --- BACKEND INTEGRATION ---
+                    try {
+                        const user = JSON.parse(localStorage.getItem('currentUser'));
+                        if (user && user.user_id) {
+                            import('../services/api').then(m => {
+                                m.api.submitScore(
+                                    user.user_id,
+                                    100,
+                                    "BalloonPop",
+                                    level,
+                                    0,
+                                    {}
+                                ).then(res => console.log("BalloonPop Score Saved:", res));
+                            });
+                        }
+                    } catch (e) { console.error("BalloonPop save error", e); }
+                    // ---------------------------
                 }
                 return newValue;
             });

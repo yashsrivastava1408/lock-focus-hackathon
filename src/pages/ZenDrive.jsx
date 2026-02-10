@@ -90,7 +90,27 @@ const ZenDrive = () => {
                 const next = prev + speed;
                 if (next >= 1) {
                     setIsPlaying(false);
-                    setDistance(d => d + Math.round(points.length * 0.1));
+                    const runScore = Math.round(points.length * 0.1);
+                    setDistance(d => d + runScore);
+
+                    // --- BACKEND INTEGRATION ---
+                    try {
+                        const user = JSON.parse(localStorage.getItem('currentUser'));
+                        if (user && user.user_id) {
+                            import('../services/api').then(m => {
+                                m.api.submitScore(
+                                    user.user_id,
+                                    runScore,
+                                    "ZenDrive",
+                                    0,
+                                    0,
+                                    {}
+                                ).then(res => console.log("ZenDrive Score Saved:", res));
+                            });
+                        }
+                    } catch (e) { console.error("ZenDrive save error", e); }
+                    // ---------------------------
+
                     return 1;
                 }
 

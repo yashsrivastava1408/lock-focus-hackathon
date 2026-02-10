@@ -305,6 +305,29 @@ const FocusScan = () => {
                 attentionLevel: attentionScore
             });
 
+            // --- BACKEND INTEGRATION ---
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (user && user.user_id) {
+                    import('../services/api').then(m => {
+                        m.api.submitScore(
+                            user.user_id,
+                            totalScore,
+                            "FocusScan",
+                            0, // Level
+                            attentionScore, // Attention
+                            {
+                                wpm: wpm || 250,
+                                reactionTime: measures.reaction,
+                                contrast: measures.contrast,
+                                crowding: measures.crowding
+                            }
+                        ).then(res => console.log("Scan Saved:", res));
+                    });
+                }
+            } catch (e) { console.error("Scan save error", e); }
+            // ---------------------------
+
             navigate('/test-results', {
                 state: {
                     wpm: wpm || 250,

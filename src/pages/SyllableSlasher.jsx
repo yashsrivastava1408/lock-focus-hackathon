@@ -63,6 +63,24 @@ const SyllableSlasher = () => {
             setGameState('summary');
             triggerConfetti();
             storage.saveSession('syllable-slasher', score);
+
+            // --- BACKEND INTEGRATION ---
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (user && user.user_id) {
+                    import('../services/api').then(m => {
+                        m.api.submitScore(
+                            user.user_id,
+                            score,
+                            "SyllableSlasher",
+                            0,
+                            0,
+                            { combo }
+                        ).then(res => console.log("Syllable Score Saved:", res));
+                    });
+                }
+            } catch (e) { console.error("Syllable save error", e); }
+            // ---------------------------
         }
         return () => clearInterval(timer);
     }, [gameState, timeLeft, triggerConfetti]);

@@ -434,6 +434,7 @@ const PeriQuestGame = () => {
         setGameState('RESULTS');
 
         // Persist Session
+        // Persist Session
         storage.saveSession('peri-quest', score, {
             level,
             accuracy: parseFloat(metrics.totalStimuli > 0 ? ((metrics.correctReactions / metrics.totalStimuli) * 100).toFixed(1) : 0),
@@ -443,6 +444,33 @@ const PeriQuestGame = () => {
             fixationBreaks: metrics.fixationBreaks,
             fieldPerformance: metrics.fieldPerformance
         });
+
+        // --- BACKEND INTEGRATION ---
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.user_id) {
+                const acc = parseFloat(metrics.totalStimuli > 0 ? ((metrics.correctReactions / metrics.totalStimuli) * 100).toFixed(1) : 0);
+                const avgRt = metrics.reactionTimes.length > 0
+                    ? Math.round(metrics.reactionTimes.reduce((a, b) => a + b, 0) / metrics.reactionTimes.length)
+                    : 0;
+
+                import('../services/api').then(m => {
+                    m.api.submitScore(
+                        user.user_id,
+                        score,
+                        "PeriQuest",
+                        level,
+                        acc, // use Accuracy as Attention proxy
+                        {
+                            avgReactionTime: avgRt,
+                            fixationBreaks: metrics.fixationBreaks,
+                            fieldPerformance: metrics.fieldPerformance
+                        }
+                    ).then(res => console.log("PeriQuest Score Saved:", res));
+                });
+            }
+        } catch (e) { console.error("PeriQuest save error", e); }
+        // ---------------------------
 
         if (score > 500) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });

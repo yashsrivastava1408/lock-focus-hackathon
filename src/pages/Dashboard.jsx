@@ -11,6 +11,7 @@ import ProgressCharts from '../components/ProgressCharts';
 import AuroraAnimation from '../components/AuroraAnimation';
 import { storage } from '../utils/storage';
 import VisionStudioCards from '../components/VisionStudioCards';
+import LeaderboardWidget from '../components/LeaderboardWidget';
 
 // Optimized CSS Keyframes for Performance
 const dashboardStyles = `
@@ -374,9 +375,10 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* 2. ADAPTIVE READER (Side Panel) — Premium Redesign */}
-                <div className="lg:col-span-4">
-                    <Link to="/adaptive-reader" className="block h-full">
+                {/* 2. SIDEBAR (Reader + Leaderboard) */}
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                    {/* A. ADAPTIVE READER */}
+                    <Link to="/adaptive-reader" className="block flex-1 min-h-[280px]">
                         <Card delay={0.3} className="h-full bg-gradient-to-br from-[#0a1e1e] via-[#0d1e25] to-[#0a1628] border-teal-500/10 dark:border-teal-900/40 relative overflow-hidden group hover:border-teal-500/30 transition-all p-0">
 
                             {/* Animated Background Orbs */}
@@ -432,6 +434,11 @@ const Dashboard = () => {
                             </div>
                         </Card>
                     </Link>
+
+                    {/* B. LEADERBOARD WIDGET */}
+                    <div className="flex-1 min-h-[400px]">
+                        <LeaderboardWidget />
+                    </div>
                 </div>
 
                 {/* 3. VISION STUDIO (Full Width) — Premium Redesign */}

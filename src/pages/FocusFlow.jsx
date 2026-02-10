@@ -309,6 +309,25 @@ const FocusFlow = () => {
                 localStorage.setItem('focusFlowUnlockedLevels', newUnlock.toString());
             }
         }
+
+        // --- BACKEND INTEGRATION (Start) ---
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.user_id) {
+                import('../services/api').then(m => {
+                    m.api.submitScore(
+                        user.user_id,
+                        scoreRef.current,
+                        "FocusFlow",
+                        currentLevel.id,
+                        attentionPct
+                    ).then(res => {
+                        console.log("Score Saved:", res);
+                    });
+                });
+            }
+        } catch (e) { console.error("Score save error", e); }
+        // --- BACKEND INTEGRATION (End) ---
     };
 
 

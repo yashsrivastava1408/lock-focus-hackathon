@@ -102,6 +102,24 @@ const DyslexiaGame = () => {
             setGameState('summary');
             triggerConfetti();
             storage.saveSession('letter-match', score);
+
+            // --- BACKEND INTEGRATION ---
+            try {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                if (user && user.user_id) {
+                    import('../services/api').then(m => {
+                        m.api.submitScore(
+                            user.user_id,
+                            score,
+                            "DyslexiaGame",
+                            0,
+                            0,
+                            { streak }
+                        ).then(res => console.log("Dyslexia Score Saved:", res));
+                    });
+                }
+            } catch (e) { console.error("Dyslexia save error", e); }
+            // ---------------------------
         }
         return () => clearInterval(timer);
     }, [gameState, timeLeft, triggerConfetti]);

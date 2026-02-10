@@ -95,6 +95,30 @@ const TimeBlindnessGame = () => {
             isChaosMode,
             difficulty: difficulty.label
         });
+
+        // --- BACKEND INTEGRATION ---
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user && user.user_id) {
+                import('../services/api').then(m => {
+                    m.api.submitScore(
+                        user.user_id,
+                        finalScore,
+                        "TimeBlindness",
+                        0,
+                        0,
+                        {
+                            targetTime,
+                            elapsedTime: elapsed,
+                            isChaosMode,
+                            difficulty: difficulty.label,
+                            streak // Pass current streak
+                        }
+                    ).then(res => console.log("TimeBlindness Score Saved:", res));
+                });
+            }
+        } catch (e) { console.error("TimeBlindness save error", e); }
+        // ---------------------------
     };
 
     const calculateScore = (elapsed) => {

@@ -128,6 +128,8 @@ const ProjectPage = () => {
                         >
                             <Target className="w-4 h-4" /> Our Mission
                         </button>
+
+
                     </motion.div>
 
                     {/* HERO TECH STACK */}
