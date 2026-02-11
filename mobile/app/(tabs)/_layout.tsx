@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -89,12 +90,12 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'REFLECT',
+          title: 'FOCUS',
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center justify-center">
               {focused && <View className="absolute bottom-[-10px] w-1.5 h-1.5 rounded-full bg-[#2dd4bf] shadow-[0_0_8px_#2dd4bf]" />}
-              <IconSymbol size={26} name="book.fill" color={color} />
-              <Text className="text-[7px] font-black mt-1 uppercase tracking-widest" style={{ color }}>Journal</Text>
+              <MaterialCommunityIcons size={26} name="brain" color={color} />
+              <Text className="text-[7px] font-black mt-1 uppercase tracking-widest" style={{ color }}>Focus</Text>
             </View>
           ),
         }}
