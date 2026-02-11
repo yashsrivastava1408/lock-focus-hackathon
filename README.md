@@ -59,7 +59,7 @@ Simulates neurodivergent experiences to foster empathy and understanding.
 
 ## 🏗️ System Architecture
 
-The ecosystem allows for modular interaction between the UI, Logic, and AI layers, all running client-side.
+The ecosystem employs a **Zero-Trust** hybrid architecture. Sensitive cognitive data is processed locally, while persistent records are secured with military-grade encryption.
 
 ```mermaid
 flowchart TB
@@ -67,38 +67,47 @@ flowchart TB
         direction TB
         UI[["React UI Components"]]
         Logic{"Game & App Logic"}
-        AI(("AI/ML Engine<br/>MediaPipe Tasks Vision"))
-        Storage[("Local Persistence")]
+        AI(("MediaPipe AI<br/>(Local Vision)"))
+    end
+
+    subgraph Server ["Secure Backend Layer"]
+        API["FastAPI / Express API"]
+        Vault[("AES-256 Encrypted Vault<br/>(Chat History & Sessions)")]
+        LLM(("Gemini 1.5 Flash<br/>(AI Companion)"))
     end
 
     style Client fill:#0a0f1d,stroke:#1e293b,stroke-width:2px,color:#fff
+    style Server fill:#1e1e24,stroke:#6366f1,stroke-width:2px,color:#fff
     style UI fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff
     style Logic fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
     style AI fill:#1e293b,stroke:#a855f7,stroke-width:2px,color:#fff
-    style Storage fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
+    style Vault fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#fff
+    style LLM fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#fff
 
     UI -->|User Events| Logic
     Logic -->|State Updates| UI
     Logic -->|Inference Request| AI
     AI -->|Gaze & Face Landmarks| Logic
-    Logic -->|Save Progress| Storage
-    Storage -->|Load Profile| Logic
+    Logic <-->|Sync Encrypted Data| API
+    API <-->|Read/Write| Vault
+    API <-->|Context-Aware Query| LLM
 ```
 
 ## 🔄 Data Flow Pipeline
 
-A privacy-first pipeline where video feeds are processed instantaneously in memory with **Zero Data Transmission**.
+A privacy-first pipeline where real-time video processing remains local, while session data and chat history are securely persisted.
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Cam as 📷 Camera Feed
-    participant MP as 🧠 MediaPipe (Face Landmarker)
+    participant MP as 🧠 MediaPipe (Local)
     participant Engine as ⚙️ Gaze Engine
-    participant App as 🎮 Focus Flow / Reader
-    participant Store as 💾 LocalStorage
+    participant App as 🎮 App Logic
+    participant API as ☁️ Backend API
+    participant DB as 🔒 AES-256 Store
     
-    Note over Cam, Store: 🔒 Privacy Barrier: Local-Only Processing
+    Note over Cam, Engine: 🔒 Local-Only Processing (No Video Streamed)
     
     Cam->>MP: Raw Video Frame (60fps)
     activate MP
@@ -106,21 +115,23 @@ sequenceDiagram
     deactivate MP
     
     activate Engine
-    Engine->>Engine: Calculate Pupil-to-Corner Ratio
-    Engine->>Engine: Analyze Head Pose (Vector)
-    Engine->>App: Gaze Coordinates (x, y) + Fixation State
+    Engine->>Engine: Calculate Gaze Vector & Attention
+    Engine->>App: Gaze Coordinates (x, y)
     deactivate Engine
     
     activate App
     alt Focus Flow
-        App->>App: Update Level Physics / Neuro-Pilot
-    else PeriQuest
-        App->>App: Verify Central Fixation
-    else Adaptive Reader
-        App->>App: Dynamic Opacity & Font Scaling
+        App->>App: Update Physics / Game State
     end
     
-    App-->>Store: Save Session Metrics (JSON)
+    Note over App, DB: ☁️ Secure Persistence
+    
+    App->>API: POST /api/session/save (JSON)
+    activate API
+    API->>API: Encrypt Payload (AES-256-CBC)
+    API->>DB: Write Encrypted Blob
+    API-->>App: Confirmation
+    deactivate API
     deactivate App
 ```
 
@@ -129,8 +140,11 @@ sequenceDiagram
 ## 🛠️ Tech Stack
 
 *   **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion
-*   **AI/ML**: MediaPipe (@mediapipe/tasks-vision), Tesseract.js (OCR)
-*   **State Management**: React Context, LocalStorage
+*   **AI/ML (Vision)**: MediaPipe (@mediapipe/tasks-vision) - *Running Locally*
+*   **AI/ML (Language)**: Google Gemini 1.5 Flash - *via Backend*
+*   **Backend**: Node.js (Express) & Python (FastAPI)
+*   **Database**: SQLite (SQLAlchemy / sqlite3)
+*   **Security**: **AES-256-CBC Encryption** for all at-rest user data
 *   **Visualization**: Recharts, Canvas API
 *   **Icons**: Lucide React
 
@@ -139,8 +153,9 @@ sequenceDiagram
 ## 🔒 Privacy & Ethics
 
 Lock Focus is built with **Privacy-by-Design**:
-*   **Zero-Transmission**: Video streams never leave the browser; processing happens in-memory and is discarded immediately.
-*   **No Biometrics**: We track mathematical vectors (points), not faces or identities.
+*   **Hybrid Architecture**: Heavy computer vision runs **locally** in the browser to ensure no video feeds ever leave your device.
+*   **Military-Grade Encryption**: All chat history and user sessions are stored using **AES-256-CBC** encryption. Even if the database is compromised, the data remains unreadable.
+*   **Secure Data**: Only abstract data (scores, session durations, text logs) is sent to the backend for persistence.
 *   **Opt-in Only**: Camera access is explicitly requested per session.
 
 ---
