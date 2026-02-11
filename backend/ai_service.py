@@ -46,3 +46,77 @@ def get_ai_feedback(score_data):
         except Exception as e:
             print(f"Ollama Connection Error: {e}")
             return "AI Analysis unavailable (Check Ollama connection)"
+
+def get_chat_response(message, history=[]):
+    """
+    Generates a chat response.
+    Input: message (str), history (list)
+    Output: dict { "response": str, "action": str, "tasks": list }
+    """
+    
+    if USE_MOCK:
+        # --- MOCK CHAT IMPLEMENTATION (FOR DEMO) ---
+        # Simulates intelligent responses without risking local LLM failure
+        
+        lower_msg = message.lower()
+        
+        if "task" in lower_msg or "do" in lower_msg or "list" in lower_msg:
+             return {
+                "response": "I can help with that! verified that your task list is getting long. Let's break it down. based on your energy levels, maybe start with the easiest one?",
+                "action": "suggest_breakdown",
+                "tasks": [
+                    {"id": random.randint(1000,9999), "text": "Review project requirements", "completed": False, "priority": "high"},
+                    {"id": random.randint(1000,9999), "text": "Draft initial outline", "completed": False, "priority": "medium"}
+                ]
+            }
+        
+        elif "tired" in lower_msg or "burnout" in lower_msg:
+             return {
+                "response": "I hear you. detailed analysis of your gaze patterns suggests fatigue. 85% chance of burnout if you continue. Recommend a 5-minute NSDR (Non-Sleep Deep Rest) session.",
+                "action": "suggest_rest",
+                "tasks": []
+            }
+            
+        else:
+            generic_responses = [
+                "I understand. How does that make you feel regarding your current focus goals?",
+                "That's interesting. I've logged this in your session history. shall we try a focus sprint?",
+                "Noted. Remember, consistency is key for neuroplasticity. You're doing great.",
+                "Let's align this with your daily objectives. What's the one thing you want to achieve right now?"
+            ]
+            return {
+                "response": random.choice(generic_responses),
+                "action": "none",
+                "tasks": []
+            }
+
+    else:
+        # --- REAL OLLAMA CHAT IMPLEMENTATION ---
+        # Ensure 'ollama serve' is running with 'llama3' model
+        try:
+            # Construct context from history
+            context_str = "\\n".join([f"{'User' if msg['isUser'] else 'AI'}: {msg['text']}" for msg in history[-5:]])
+            prompt = f"System: You are an empathetic ADHD assistant. Be concise.\\nContext:\\n{context_str}\\nUser: {message}\\nAI:"
+            
+            payload = {
+                "model": "llama3",
+                "prompt": prompt,
+                "stream": False
+            }
+            
+            response = requests.post(OLLAMA_URL, json=payload, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                ai_text = result.get("response", "I'm listening.")
+                return {
+                    "response": ai_text,
+                    "action": "none",
+                    "tasks": [] # Real LLM task parsing would go here
+                }
+            else:
+                 return { "response": f"Error: {response.status_code}", "action": "error" }
+                 
+        except Exception as e:
+            print(f"Ollama Error: {e}")
+            return { "response": "I'm having trouble connecting to my neural engine. Is Ollama running?", "action": "error" }

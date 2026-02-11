@@ -55,49 +55,53 @@ const FIELD_ZONES = {
 // ==================== STIMULUS SHAPES ====================
 const StimulusShape = ({ type, size, color }) => {
     const baseSize = size;
+    const glowStyle = { filter: `drop-shadow(0 0 ${baseSize / 2}px ${color}) drop-shadow(0 0 ${baseSize}px ${color})` };
 
     switch (type) {
         case 'circle':
             return (
                 <div
-                    className="rounded-full"
+                    className="rounded-full animate-pulse"
                     style={{
                         width: baseSize,
                         height: baseSize,
                         backgroundColor: color,
-                        boxShadow: `0 0 ${baseSize / 2}px ${color}40, 0 0 ${baseSize}px ${color}20`
+                        boxShadow: `inset 0 0 ${baseSize / 4}px rgba(255,255,255,0.8), 0 0 ${baseSize / 1.5}px ${color}`,
+                        ...glowStyle
                     }}
                 />
             );
         case 'square':
             return (
                 <div
-                    className="rounded-lg"
+                    className="rounded-lg animate-bounce"
                     style={{
                         width: baseSize,
                         height: baseSize,
                         backgroundColor: color,
-                        boxShadow: `0 0 ${baseSize / 2}px ${color}40`
+                        boxShadow: `inset 0 0 ${baseSize / 4}px rgba(255,255,255,0.8), 0 0 ${baseSize}px ${color}`,
+                        ...glowStyle
                     }}
                 />
             );
         case 'triangle':
             return (
-                <div style={{
+                <div className="animate-pulse" style={{
                     width: 0,
                     height: 0,
                     borderLeft: `${baseSize / 2}px solid transparent`,
                     borderRight: `${baseSize / 2}px solid transparent`,
                     borderBottom: `${baseSize}px solid ${color}`,
-                    filter: `drop-shadow(0 0 ${baseSize / 3}px ${color}60)`
+                    filter: `drop-shadow(0 0 ${baseSize / 3}px ${color}) drop-shadow(0 0 ${baseSize}px ${color})`,
+                    transform: 'rotate(0deg)'
                 }} />
             );
         case 'star':
             return (
-                <div style={{
-                    fontSize: baseSize * 0.8,
+                <div className="animate-spin-slow" style={{
+                    fontSize: baseSize * 1.2,
                     color: color,
-                    textShadow: `0 0 ${baseSize / 3}px ${color}`,
+                    textShadow: `0 0 ${baseSize / 2}px ${color}, 0 0 ${baseSize}px ${color}`,
                     lineHeight: 1
                 }}>
                     ★
@@ -117,6 +121,7 @@ const PeriQuestGame = () => {
     const [timeRemaining, setTimeRemaining] = useState(CONFIG.SESSION_DURATION);
     const [stimuli, setStimuli] = useState([]);
     const [feedback, setFeedback] = useState(null);
+    const [combo, setCombo] = useState(0);
 
     // Metrics
     const [metrics, setMetrics] = useState({
@@ -239,24 +244,48 @@ const PeriQuestGame = () => {
 
         if (activeStimulus) {
             const reactionTime = now - activeStimulus.appearTime;
-            let points = 0;
+            let basePoints = 0;
             let feedbackType = '';
 
+            // Calculate multiplier based on combo
+            // 0-4: 1x, 5-9: 1.5x, 10+: 2x, 20+: 3x
+            const multiplier = combo >= 20 ? 3 : combo >= 10 ? 2 : combo >= 5 ? 1.5 : 1;
+
             if (reactionTime <= CONFIG.PERFECT_RT) {
-                points = CONFIG.PERFECT_SCORE;
+                basePoints = CONFIG.PERFECT_SCORE;
                 feedbackType = 'PERFECT!';
             } else if (reactionTime <= CONFIG.GOOD_RT) {
-                points = CONFIG.GOOD_SCORE;
+                basePoints = CONFIG.GOOD_SCORE;
                 feedbackType = 'Good!';
             } else if (reactionTime <= CONFIG.SLOW_RT) {
-                points = CONFIG.SLOW_SCORE;
+                basePoints = CONFIG.SLOW_SCORE;
                 feedbackType = 'Slow';
             } else {
-                points = 10;
+                basePoints = 10;
                 feedbackType = 'Late';
             }
 
+            const points = Math.round(basePoints * multiplier);
+
+            // Particles!
+            if (gameAreaRef.current) {
+                const rect = gameAreaRef.current.getBoundingClientRect();
+                // Normalize coordinates for confetti (0-1)
+                const xNorm = activeStimulus.x / rect.width;
+                const yNorm = activeStimulus.y / rect.height;
+
+                confetti({
+                    particleCount: combo > 10 ? 30 : 15,
+                    spread: 50,
+                    origin: { x: xNorm, y: yNorm },
+                    colors: [activeStimulus.color, '#ffffff'],
+                    disableForReducedMotion: true
+                });
+            }
+
             setScore(prev => prev + points);
+            setCombo(prev => prev + 1); // Increment combo
+
             setStimuli(prev => prev.map(s =>
                 s.id === activeStimulus.id ? { ...s, reacted: true } : s
             ));
@@ -274,14 +303,22 @@ const PeriQuestGame = () => {
                 }
             }));
 
-            setFeedback({ type: 'success', message: feedbackType, points });
-            setTimeout(() => setFeedback(null), 600);
+            setFeedback({ type: 'success', message: `${feedbackType} ${multiplier > 1 ? `x${multiplier}` : ''}`, points });
+            setTimeout(() => setFeedback(null), 800);
         } else {
             // False positive - no target visible
-            setFeedback({ type: 'error', message: 'No target!', points: 0 });
+            setFeedback({ type: 'error', message: 'MISS!', points: 0 });
+            setCombo(0); // Reset combo
+
+            // Screen shake effect
+            if (gameAreaRef.current) {
+                gameAreaRef.current.classList.add('animate-shake');
+                setTimeout(() => gameAreaRef.current.classList.remove('animate-shake'), 300);
+            }
+
             setTimeout(() => setFeedback(null), 400);
         }
-    }, [gameState, stimuli]);
+    }, [gameState, stimuli, combo]);
 
     // Remove expired stimuli
     const updateStimuli = useCallback(() => {
@@ -855,9 +892,9 @@ const PeriQuestGame = () => {
                                         {['top_left', 'top', 'top_right', 'left', 'center', 'right', 'bottom_left', 'bottom', 'bottom_right'].map((field, i) => {
                                             if (field === 'center') {
                                                 return (
-                                                    <div key={i} className="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl border border-white/20">
-                                                        <Eye className="w-5 h-5 text-cyan-400 opacity-50 mb-1" />
-                                                        <div className="text-[8px] font-black text-white/40 uppercase tracking-widest">Focus</div>
+                                                    <div key={i} className="flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl border border-white/20 shadow-[0_0_30px_rgba(34,211,238,0.1)]">
+                                                        <Eye className="w-6 h-6 text-cyan-400 animate-pulse mb-1" />
+                                                        <div className="text-[8px] font-black text-white/40 uppercase tracking-widest">Foveal</div>
                                                         <div className="text-sm font-black text-white font-mono">{accuracy}%</div>
                                                     </div>
                                                 );
@@ -866,16 +903,32 @@ const PeriQuestGame = () => {
                                             const acc = perf.total > 0 ? Math.round((perf.correct / perf.total) * 100) : 0;
                                             const rt = perf.correct > 0 ? Math.round(perf.avgRt) : 0;
 
+                                            // Determine HSL color based on accuracy (0 = Red/0deg, 100 = Green/120deg)
+                                            // We clamp it slightly to avoid pure red/green
+                                            const hue = Math.max(0, Math.min(120, acc * 1.2));
+                                            const bgColor = `hsla(${hue}, 70%, 50%, 0.15)`;
+                                            const borderColor = `hsla(${hue}, 80%, 60%, 0.4)`;
+                                            const textColor = `hsla(${hue}, 90%, 70%, 1)`;
+
                                             return (
                                                 <div
                                                     key={field}
-                                                    className={`p-4 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all group-hover:scale-95 ${acc >= 80 ? 'bg-emerald-500/10 border border-emerald-500/30' :
-                                                        acc >= 50 ? 'bg-amber-500/10 border border-amber-500/30' :
-                                                            'bg-red-500/10 border border-red-500/30'
-                                                        }`}
+                                                    className="p-4 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 relative overflow-hidden"
+                                                    style={{
+                                                        backgroundColor: bgColor,
+                                                        borderColor: borderColor,
+                                                        borderWidth: '1px'
+                                                    }}
                                                 >
-                                                    <div className="text-[8px] font-black text-white/20 uppercase tracking-tight">{field.replace('_', ' ')}</div>
-                                                    <div className={`text-xl font-black font-mono ${acc >= 80 ? 'text-emerald-400' : acc >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
+                                                    {/* Warning for Blind Spots */}
+                                                    {acc < 40 && perf.total > 2 && (
+                                                        <div className="absolute top-1 right-1">
+                                                            <AlertTriangle className="w-3 h-3 text-red-500 animate-pulse" />
+                                                        </div>
+                                                    )}
+
+                                                    <div className="text-[8px] font-black text-white/40 uppercase tracking-tight">{field.replace('_', ' ')}</div>
+                                                    <div className="text-xl font-black font-mono" style={{ color: textColor }}>
                                                         {acc}%
                                                     </div>
                                                     <div className="text-[8px] font-mono text-white/30">{rt}ms</div>

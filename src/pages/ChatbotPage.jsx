@@ -30,6 +30,7 @@ const ChatbotPage = () => {
         return savedSession || `session_${Date.now()}`;
     });
     const messagesEndRef = useRef(null);
+    const scrollAreaRef = useRef(null);
 
     // Initial load
     useEffect(() => {
@@ -75,9 +76,16 @@ const ChatbotPage = () => {
         localStorage.setItem('adhd_chatbot_history', JSON.stringify(history));
     }, [history]);
 
-    // Scroll to bottom
+    // Scroll to bottom (Fixed: Only scroll container, not window)
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (scrollAreaRef.current) {
+            const scrollContainer = scrollAreaRef.current;
+            // Immediate scroll for new messages to prevent "jumpiness"
+            scrollContainer.scrollTo({
+                top: scrollContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     }, [messages]);
 
     const handleSendMessage = async (messageText) => {
@@ -282,7 +290,7 @@ const ChatbotPage = () => {
 
                         {/* Chat Area */}
                         <div className="flex-1 flex flex-col min-w-0">
-                            <div className="flex-1 overflow-y-auto px-6 py-6">
+                            <div className="flex-1 overflow-y-auto px-6 py-6" ref={scrollAreaRef}>
                                 <div className="max-w-3xl mx-auto">
                                     <div className="space-y-6">
                                         {messages.map((message) => (

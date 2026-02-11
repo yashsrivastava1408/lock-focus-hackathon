@@ -46,11 +46,39 @@ class ScoreCreate(BaseModel):
     attention_avg: float = 0.0
     details: dict = {}
 
+class ChatRequest(BaseModel):
+    message: str
+    sessionId: str
+    conversationHistory: List[dict] = []
+
+
+from passlib.context import CryptContext
+
+# --- PASSWORD HASHING ---
+# Switched to pbkdf2_sha256 to avoid bcrypt dependency issues on some environments
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
 # --- API ROUTES ---
 
 @app.get("/")
 def read_root():
     return {"status": "online", "service": "LockFocus Backend"}
+
+# 0. CHAT (Ollama Integration)
+@app.post("/api/chat")
+def chat_endpoint(request: ChatRequest):
+    """
+    Handles chat messages.
+    Uses AI Service (Ollama/Mock) to generate response.
+    """
+    response_data = ai_service.get_chat_response(request.message, request.conversationHistory)
+    return response_data
 
 # 1. REGISTER
 @app.post("/api/register")
@@ -59,11 +87,11 @@ def register(user: UserCreate, db: Session = Depends(database.get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # In production, hash this password! For hackathon, plain text is risky but fast.
-    # We will use simple storing for now to ensure it works.
+    hashed_pwd = get_password_hash(user.password)
+    
     new_user = models.User(
         email=user.email, 
-        hashed_password=user.password, # TODO: Add bcrypt
+        hashed_password=hashed_pwd,
         full_name=user.full_name
     )
     db.add(new_user)
@@ -75,7 +103,10 @@ def register(user: UserCreate, db: Session = Depends(database.get_db)):
 @app.post("/api/login")
 def login(user: UserLogin, db: Session = Depends(database.get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if not db_user or db_user.hashed_password != user.password:
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+    if not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     return {

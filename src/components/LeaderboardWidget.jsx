@@ -71,15 +71,15 @@ const LeaderboardWidget = () => {
                         No scores yet. Be the first! 🚀
                     </div>
                 ) : (
-                    leaders.map((player, index) => (
+                    leaders.slice(0, 3).map((player, index) => (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
                             key={index}
                             className={`group flex items-center justify-between p-3 rounded-2xl border transition-all ${index === 0
-                                    ? 'bg-gradient-to-r from-yellow-500/10 to-transparent border-yellow-500/20'
-                                    : 'bg-slate-50 dark:bg-slate-800/30 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                                ? 'bg-gradient-to-r from-yellow-500/10 to-transparent border-yellow-500/20'
+                                : 'bg-slate-50 dark:bg-slate-800/30 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                                 }`}
                         >
                             <div className="flex items-center gap-4">

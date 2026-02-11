@@ -73,7 +73,7 @@ flowchart TB
     subgraph Server ["Secure Backend Layer"]
         API["FastAPI / Express API"]
         Vault[("AES-256 Encrypted Vault<br/>(Chat History & Sessions)")]
-        LLM(("Gemini 1.5 Flash<br/>(AI Companion)"))
+        LLM(("Ollama / Llama 3<br/>(AI Companion)"))
     end
 
     style Client fill:#0a0f1d,stroke:#1e293b,stroke-width:2px,color:#fff
@@ -141,7 +141,7 @@ sequenceDiagram
 
 *   **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion
 *   **AI/ML (Vision)**: MediaPipe (@mediapipe/tasks-vision) - *Running Locally*
-*   **AI/ML (Language)**: Google Gemini 1.5 Flash - *via Backend*
+*   **AI/ML (Language)**: Ollama (Llama 3) - *Local Inference*
 *   **Backend**: Node.js (Express) & Python (FastAPI)
 *   **Database**: SQLite (SQLAlchemy / sqlite3)
 *   **Security**: **AES-256-CBC Encryption** for all at-rest user data
