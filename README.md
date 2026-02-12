@@ -218,13 +218,14 @@ Lock Focus is built with **Privacy-by-Design**:
 
 ## 👥 Contributors
 
-*   **[Yash Srivastava](https://github.com/yashsrivastava1408)** - *Lead Developer & System Architect*
+*   **[Yash Srivastava](https://github.com/yashsrivastava1408)** — *Lead Developer (AI Integration & Systems Architecture)*
     *   **AI & Vision Engine**: Integrated MediaPipe for real-time, privacy-first gaze tracking and attention analysis.
-    *   **Mobile Development**: Engineered the cross-platform mobile companion app using React Native & Expo.
-    *   **Security Infrastructure**: Implemented military-grade AES-256 encryption for local data persistence and secure chat storage.
-    *   **Performance Engineering**: Optimized application performance through code-splitting, lazy loading, and efficient re-rendering strategies.
-    *   **Full Stack Integration**: Orchestrated the hybrid Node.js/FastAPI backend and ensured seamless data synchronization.
-*   **[Team Members]** - *Frontend & Design*
+    *   **Mobile Development**: Built cross-platform mobile companion using React Native & Expo.
+    *   **Security Infrastructure**: Implemented AES-256 encryption for local data persistence and secure chat storage.
+    *   **Performance Engineering**: Improved responsiveness using lazy loading, optimized rendering, and modular architecture.
+    *   **Full Stack Integration**: Coordinated Node.js/FastAPI backend with frontend systems ensuring seamless data flow.
+
+*   **Team Members** — *Frontend, UI/UX & Design*
 
 ---
 
