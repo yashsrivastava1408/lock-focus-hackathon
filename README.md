@@ -2,7 +2,7 @@
 > **An Intent-Aware, Adaptive Cognitive Ecosystem** (Cross-platform: Web & Mobile)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: 3rd Place @ HackElite'26](https://img.shields.io/badge/Status-3rd%20Place%20%40%20HackElite'26-gold)](https://github.com/imarnv/lock-focus)
+[![Status: 3rd Place @ HackElite'26](https://img.shields.io/badge/Status-3rd%20Place%20%40%20HackElite'26-gold)](https://github.com/yashsrivastava1408/lock-focus-hackathon)
 [![Tech Stack](https://img.shields.io/badge/Tech-React%20%7C%20Expo%20%7C%20MediaPipe-green)](https://reactjs.org/)
 
 **Lock Focus** is a privacy-first web & mobile platform designed to assess, track, and improve cognitive focus through adaptive AI and gamified neuro-feedback. It bridges the gap between static content and neurodiverse needs (ADHD/Dyslexia) using real-time attention signals.
@@ -177,7 +177,7 @@ Lock Focus is built with **Privacy-by-Design**:
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/imarnv/lock-focus.git
+    git clone https://github.com/yashsrivastava1408/lock-focus-hackathon.git
     cd lock-focus
     ```
 
@@ -218,7 +218,12 @@ Lock Focus is built with **Privacy-by-Design**:
 
 ## 👥 Contributors
 
-*   **[Yash Srivastava]** - *Lead Developer & AI Integration*
+*   **[Yash Srivastava](https://github.com/yashsrivastava1408)** - *Lead Developer & System Architect*
+    *   **AI & Vision Engine**: Integrated MediaPipe for real-time, privacy-first gaze tracking and attention analysis.
+    *   **Mobile Development**: Engineered the cross-platform mobile companion app using React Native & Expo.
+    *   **Security Infrastructure**: Implemented military-grade AES-256 encryption for local data persistence and secure chat storage.
+    *   **Performance Engineering**: Optimized application performance through code-splitting, lazy loading, and efficient re-rendering strategies.
+    *   **Full Stack Integration**: Orchestrated the hybrid Node.js/FastAPI backend and ensured seamless data synchronization.
 *   **[Team Members]** - *Frontend & Design*
 
 ---
