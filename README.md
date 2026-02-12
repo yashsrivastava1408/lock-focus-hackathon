@@ -1,11 +1,11 @@
 # Lock Focus
-> **An Intent-Aware, Adaptive Cognitive Ecosystem**
+> **An Intent-Aware, Adaptive Cognitive Ecosystem** (Cross-platform: Web & Mobile)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: Hackathon Final](https://img.shields.io/badge/Status-Hackathon%20Final-blue)](https://github.com/imarnv/lock-focus)
-[![Tech Stack](https://img.shields.io/badge/Tech-React%20%7C%20MediaPipe%20%7C%20Tailwind-green)](https://reactjs.org/)
+[![Status: 3rd Place @ HackElite'26](https://img.shields.io/badge/Status-3rd%20Place%20%40%20HackElite'26-gold)](https://github.com/imarnv/lock-focus)
+[![Tech Stack](https://img.shields.io/badge/Tech-React%20%7C%20Expo%20%7C%20MediaPipe-green)](https://reactjs.org/)
 
-**Lock Focus** is a privacy-first web platform designed to assess, track, and improve cognitive focus through adaptive AI and gamified neuro-feedback. It bridges the gap between static content and neurodiverse needs (ADHD/Dyslexia) using real-time attention signals.
+**Lock Focus** is a privacy-first web & mobile platform designed to assess, track, and improve cognitive focus through adaptive AI and gamified neuro-feedback. It bridges the gap between static content and neurodiverse needs (ADHD/Dyslexia) using real-time attention signals.
 
 ---
 
@@ -55,6 +55,12 @@ Simulates neurodivergent experiences to foster empathy and understanding.
 *   **ADHD Simulator**: Visualizes distraction and sensory overload.
 *   **Dyslexia Simulator**: Demonstrates letter dancing and crowding.
 
+### 6. 📱 Mobile Companion (iOS & Android)
+Take your cognitive training on the go with our fully synchronized mobile app.
+*   **Integrated Games**: Play **Focus Flow**, **Zen Drive**, **Balloon Pop**, and **Color Match** anywhere.
+*   **Cross-Platform Sync**: All session data syncs instantly with your web dashboard.
+*   **Tactile Training**: Exclusive touch-based cognitive exercises for fine motor control and reaction time.
+
 ---
 
 ## 🏗️ System Architecture
@@ -63,9 +69,9 @@ The ecosystem employs a **Zero-Trust** hybrid architecture. Sensitive cognitive 
 
 ```mermaid
 flowchart TB
-    subgraph Client ["Client Layer (Browser)"]
+    subgraph Client ["Client Layer (Web & Mobile)"]
         direction TB
-        UI[["React UI Components"]]
+        UI[["React / Expo UI"]]
         Logic{"Game & App Logic"}
         AI(("MediaPipe AI<br/>(Local Vision)"))
     end
@@ -84,7 +90,7 @@ flowchart TB
     style Vault fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#fff
     style LLM fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#fff
 
-    UI -->|User Events| Logic
+    UI -->|User/Touch Events| Logic
     Logic -->|State Updates| UI
     Logic -->|Inference Request| AI
     AI -->|Gaze & Face Landmarks| Logic
@@ -139,7 +145,8 @@ sequenceDiagram
 
 ## 🛠️ Tech Stack
 
-*   **Frontend**: React 18, Vite, Tailwind CSS, Framer Motion
+*   **Frontend (Web)**: React 18, Vite, Tailwind CSS, Framer Motion
+*   **Frontend (Mobile)**: React Native, Expo, NativeWind
 *   **AI/ML (Vision)**: MediaPipe (@mediapipe/tasks-vision) - *Running Locally*
 *   **AI/ML (Language)**: Ollama (Llama 3) - *Local Inference*
 *   **Backend**: Node.js (Express) & Python (FastAPI)
@@ -166,7 +173,7 @@ Lock Focus is built with **Privacy-by-Design**:
 *   Node.js (v16+)
 *   npm or yarn
 
-### Installation
+### Installation (Web)
 
 1.  **Clone the repository**
     ```bash
@@ -186,6 +193,26 @@ Lock Focus is built with **Privacy-by-Design**:
 
 4.  **Open in Browser**
     Visit `http://localhost:5173` to start using Lock Focus.
+
+### Installation (Mobile)
+
+1.  **Navigate to mobile directory**
+    ```bash
+    cd mobile
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the Expo server**
+    ```bash
+    npx expo start
+    ```
+
+4.  **Run on Device**
+    Scan the QR code with the Expo Go app (Android/iOS).
 
 ---
 
