@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Link, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Intro from './components/Intro';
 import { ThemeProvider } from './components/ThemeContext';
@@ -47,15 +47,8 @@ const LandingWrapper = () => {
         )}
       </AnimatePresence>
 
-      {/* Show Project Page after Intro */}
       {introComplete && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <LoginPage />
-        </motion.div>
+        <Navigate to="/dashboard" replace />
       )}
     </>
   );
